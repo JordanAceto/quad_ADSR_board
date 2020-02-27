@@ -1,0 +1,195 @@
+EESchema Schematic File Version 4
+EELAYER 30 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 6 9
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L Regulator_Linear:LM1117-3.3 U6
+U 1 1 5E567A50
+P 4800 2550
+F 0 "U6" H 4800 2792 50  0000 C CNN
+F 1 "LM1117-3.3" H 4800 2701 50  0000 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-223-3_TabPin2" H 4800 2550 50  0001 C CNN
+F 3 "http://www.ti.com/lit/ds/symlink/lm1117.pdf" H 4800 2550 50  0001 C CNN
+	1    4800 2550
+	1    0    0    -1  
+$EndComp
+$Comp
+L Connector_Generic:Conn_02x05_Odd_Even J1
+U 1 1 5E5682AD
+P 1800 2200
+F 0 "J1" H 1850 1775 50  0000 C CNN
+F 1 "power_in" H 1850 1866 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_2x05_P2.54mm_Vertical" H 1800 2200 50  0001 C CNN
+F 3 "~" H 1800 2200 50  0001 C CNN
+	1    1800 2200
+	-1   0    0    1   
+$EndComp
+$Comp
+L Device:CP1 C14
+U 1 1 5E569572
+P 2150 3900
+F 0 "C14" H 2265 3946 50  0000 L CNN
+F 1 "CP1" H 2265 3855 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_5x5.4" H 2150 3900 50  0001 C CNN
+F 3 "~" H 2150 3900 50  0001 C CNN
+	1    2150 3900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP1 C16
+U 1 1 5E569839
+P 2700 3950
+F 0 "C16" H 2815 3996 50  0000 L CNN
+F 1 "CP1" H 2815 3905 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_5x5.4" H 2700 3950 50  0001 C CNN
+F 3 "~" H 2700 3950 50  0001 C CNN
+	1    2700 3950
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP1 C17
+U 1 1 5E569A11
+P 3200 3900
+F 0 "C17" H 3315 3946 50  0000 L CNN
+F 1 "CP1" H 3315 3855 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_5x5.4" H 3200 3900 50  0001 C CNN
+F 3 "~" H 3200 3900 50  0001 C CNN
+	1    3200 3900
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:CP1 C20
+U 1 1 5E569C76
+P 3800 3850
+F 0 "C20" H 3915 3896 50  0000 L CNN
+F 1 "CP1" H 3915 3805 50  0000 L CNN
+F 2 "Capacitor_SMD:CP_Elec_5x5.4" H 3800 3850 50  0001 C CNN
+F 3 "~" H 3800 3850 50  0001 C CNN
+	1    3800 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C13
+U 1 1 5E569FA8
+P 2000 4800
+F 0 "C13" H 2115 4846 50  0000 L CNN
+F 1 "C" H 2115 4755 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2038 4650 50  0001 C CNN
+F 3 "~" H 2000 4800 50  0001 C CNN
+	1    2000 4800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C15
+U 1 1 5E56A2CE
+P 2650 4800
+F 0 "C15" H 2765 4846 50  0000 L CNN
+F 1 "C" H 2765 4755 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 2688 4650 50  0001 C CNN
+F 3 "~" H 2650 4800 50  0001 C CNN
+	1    2650 4800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C18
+U 1 1 5E56A4E8
+P 3200 4800
+F 0 "C18" H 3315 4846 50  0000 L CNN
+F 1 "C" H 3315 4755 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 3238 4650 50  0001 C CNN
+F 3 "~" H 3200 4800 50  0001 C CNN
+	1    3200 4800
+	1    0    0    -1  
+$EndComp
+$Comp
+L Device:C C19
+U 1 1 5E56A6D0
+P 3750 4750
+F 0 "C19" H 3865 4796 50  0000 L CNN
+F 1 "C" H 3865 4705 50  0000 L CNN
+F 2 "Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder" H 3788 4600 50  0001 C CNN
+F 3 "~" H 3750 4750 50  0001 C CNN
+	1    3750 4750
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:+12V #PWR0126
+U 1 1 5EBC3386
+P 1350 1850
+F 0 "#PWR0126" H 1350 1700 50  0001 C CNN
+F 1 "+12V" H 1365 2023 50  0000 C CNN
+F 2 "" H 1350 1850 50  0001 C CNN
+F 3 "" H 1350 1850 50  0001 C CNN
+	1    1350 1850
+	1    0    0    -1  
+$EndComp
+$Comp
+L power:-12V #PWR0127
+U 1 1 5EBC3980
+P 1350 2550
+F 0 "#PWR0127" H 1350 2650 50  0001 C CNN
+F 1 "-12V" H 1365 2723 50  0000 C CNN
+F 2 "" H 1350 2550 50  0001 C CNN
+F 3 "" H 1350 2550 50  0001 C CNN
+	1    1350 2550
+	-1   0    0    1   
+$EndComp
+$Comp
+L power:GND #PWR0128
+U 1 1 5EBC497C
+P 1200 2200
+F 0 "#PWR0128" H 1200 1950 50  0001 C CNN
+F 1 "GND" V 1205 2072 50  0000 R CNN
+F 2 "" H 1200 2200 50  0001 C CNN
+F 3 "" H 1200 2200 50  0001 C CNN
+	1    1200 2200
+	0    1    1    0   
+$EndComp
+Wire Wire Line
+	1500 2000 1350 2000
+Wire Wire Line
+	1350 2000 1350 1850
+Wire Wire Line
+	1500 2400 1350 2400
+Wire Wire Line
+	1350 2400 1350 2550
+Wire Wire Line
+	1500 2200 1350 2200
+Wire Wire Line
+	1500 2100 1350 2100
+Wire Wire Line
+	1350 2100 1350 2200
+Connection ~ 1350 2200
+Wire Wire Line
+	1350 2200 1200 2200
+Wire Wire Line
+	1350 2200 1350 2300
+Wire Wire Line
+	1350 2300 1500 2300
+Wire Wire Line
+	1500 2000 2000 2000
+Connection ~ 1500 2000
+Wire Wire Line
+	2000 2100 1500 2100
+Connection ~ 1500 2100
+Wire Wire Line
+	1500 2200 2000 2200
+Connection ~ 1500 2200
+Wire Wire Line
+	2000 2300 1500 2300
+Connection ~ 1500 2300
+Wire Wire Line
+	1500 2400 2000 2400
+Connection ~ 1500 2400
+$EndSCHEMATC

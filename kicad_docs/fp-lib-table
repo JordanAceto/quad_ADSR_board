@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name Eurocad)(type KiCad)(uri ${KIPRJMOD}/eurocad-master/Eurocad.pretty)(options "")(descr ""))
+)
