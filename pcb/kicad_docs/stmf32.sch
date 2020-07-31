@@ -4,13 +4,13 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 8 10
-Title ""
-Date ""
-Rev ""
+Title "Quad ADSR"
+Date "2020-07-31"
+Rev "0"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
+Comment1 "creativecommons.org/licenses/by/4.0/"
+Comment2 "License: CC by 4.0"
+Comment3 "Author: Jordan Aceto"
 Comment4 ""
 $EndDescr
 Text HLabel 6550 2500 2    50   Input ~ 0
@@ -355,8 +355,6 @@ F 3 "" H 4850 2400 50  0001 C CNN
 	1    4850 2400
 	0    1    1    0   
 $EndComp
-Text HLabel 5150 2200 0    50   3State ~ 0
-NRST
 $Comp
 L Device:R R83
 U 1 1 5EE47505
@@ -412,20 +410,6 @@ F 3 "~" H 2150 5600 50  0001 C CNN
 	1    2150 5600
 	1    0    0    -1  
 $EndComp
-Text HLabel 1950 5800 0    50   3State ~ 0
-NRST
-Text HLabel 6550 3500 2    50   BiDi ~ 0
-SWDIO
-Text HLabel 6550 3600 2    50   BiDi ~ 0
-SWCLK
-Text HLabel 6550 4200 2    50   BiDi ~ 0
-SWO
-Text HLabel 1950 5900 0    50   BiDi ~ 0
-SWO
-Text HLabel 1950 5500 0    50   BiDi ~ 0
-SWCLK
-Text HLabel 1950 5700 0    50   BiDi ~ 0
-SWDIO
 NoConn ~ 5150 3700
 NoConn ~ 5150 3900
 NoConn ~ 5150 4000
@@ -500,4 +484,20 @@ NoConn ~ 6550 5300
 NoConn ~ 5150 5200
 NoConn ~ 5150 4300
 NoConn ~ 5150 4400
+Text Label 1950 5500 2    50   ~ 0
+SWCLK
+Text Label 6550 3600 0    50   ~ 0
+SWCLK
+Text Label 6550 3500 0    50   ~ 0
+SWDIO
+Text Label 1950 5700 2    50   ~ 0
+SWDIO
+Text Label 1950 5800 2    50   ~ 0
+NRST
+Text Label 5150 2200 2    50   ~ 0
+NRST
+Text Label 1950 5900 2    50   ~ 0
+SWO
+Text Label 6550 4200 0    50   ~ 0
+SWO
 $EndSCHEMATC

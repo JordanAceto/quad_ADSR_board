@@ -4,13 +4,13 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 10 10
-Title ""
-Date ""
-Rev ""
+Title "Quad ADSR"
+Date "2020-07-31"
+Rev "0"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
+Comment1 "creativecommons.org/licenses/by/4.0/"
+Comment2 "License: CC by 4.0"
+Comment3 "Author: Jordan Aceto"
 Comment4 ""
 $EndDescr
 $Comp
@@ -338,4 +338,5 @@ Text Label 5650 6150 2    50   ~ 0
 QA
 Text Label 5650 1450 2    50   ~ 0
 QH
+NoConn ~ 3550 2800
 $EndSCHEMATC

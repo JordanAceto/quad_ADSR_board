@@ -4,13 +4,13 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 9 10
-Title ""
-Date ""
-Rev ""
+Title "Quad ADSR"
+Date "2020-07-31"
+Rev "0"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
+Comment1 "creativecommons.org/licenses/by/4.0/"
+Comment2 "License: CC by 4.0"
+Comment3 "Author: Jordan Aceto"
 Comment4 ""
 $EndDescr
 Text HLabel 6150 1350 2    50   Output ~ 0

@@ -3,14 +3,14 @@ EELAYER 30 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 5 10
-Title ""
-Date ""
-Rev ""
+Sheet 4 10
+Title "Quad ADSR"
+Date "2020-07-31"
+Rev "0"
 Comp ""
-Comment1 ""
-Comment2 ""
-Comment3 ""
+Comment1 "creativecommons.org/licenses/by/4.0/"
+Comment2 "License: CC by 4.0"
+Comment3 "Author: Jordan Aceto"
 Comment4 ""
 $EndDescr
 $Comp
@@ -193,4 +193,8 @@ Text HLabel 4400 6000 0    50   Input ~ 0
 adsr_4_output_jack
 Wire Wire Line
 	4400 6000 4600 6000
+NoConn ~ 5100 1600
+NoConn ~ 5100 3100
+NoConn ~ 5100 4600
+NoConn ~ 5100 6100
 $EndSCHEMATC
