@@ -11,7 +11,6 @@ MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 
 TOOLCHAIN    = arm-none-eabi
 C_COMPILER   = $(TOOLCHAIN)-gcc
-CPP_COMPILER = $(TOOLCHAIN)-g++
 OBJECT_COPY  = $(TOOLCHAIN)-objcopy
 OBJECT_DUMP  = $(TOOLCHAIN)-objdump
 OBJECT_SIZE  = $(TOOLCHAIN)-size
@@ -23,7 +22,7 @@ CMSIS_INC_DIR = ./CMSIS/Include/
 BIN_DIR       = ./bin/
 
 OPTIONS += $(MCU)
-OPTIONS += -O0
+OPTIONS += -Os
 OPTIONS += --specs=nosys.specs
 OPTIONS += -nostdlib
 OPTIONS += -fno-exceptions
@@ -42,12 +41,6 @@ C_FLAGS += -I$(INC_DIR)
 C_FLAGS += -I$(CMSIS_DEV_DIR)
 C_FLAGS += -I$(CMSIS_INC_DIR)
 
-CPP_FLAGS += -c
-CPP_FLAGS += $(OPTIONS)
-CPP_FLAGS += -I$(INC_DIR)
-CPP_FLAGS += -I$(CMSIS_DEV_DIR)
-CPP_FLAGS += -I$(CMSIS_INC_DIR)
-
 L_FLAGS += $(MCU)
 L_FLAGS += -specs=nano.specs
 L_FLAGS += -nostartfiles
@@ -64,8 +57,6 @@ ASM_OBJECT_FILES := $(patsubst $(SRC_DIR)%.s,$(BIN_DIR)%.o,$(wildcard $(SRC_DIR)
 
 C_OBJECT_FILES := $(patsubst $(SRC_DIR)%.c,$(BIN_DIR)%.o,$(wildcard $(SRC_DIR)*.c))
 
-CPP_OBJECT_FILES := $(patsubst $(SRC_DIR)%.cpp,$(BIN_DIR)%.o,$(wildcard $(SRC_DIR)*.cpp))
-
 .PHONY: all
 all: $(C_OBJECT_FILES) $(BIN_DIR)
 	$(C_COMPILER) $(C_FLAGS) $(SRC_DIR)$(TARGET).c -o $(BIN_DIR)$(TARGET).o
@@ -79,10 +70,6 @@ $(BIN_DIR)%.o: $(SRC_DIR)%.s
 $(BIN_DIR)%.o: $(SRC_DIR)%.c
 	$(C_COMPILER) $(C_FLAGS) $< -o $@
 
-# compile the user provided application c++ source files
-$(BIN_DIR)%.o: $(SRC_DIR)%.cpp
-	$(CPP_COMPILER) $(CPP_FLAGS) $< -o $@
-
 $(BIN_DIR)$(TARGET).elf: $(C_OBJECT_FILES) $(ASM_OBJECT_FILES) $(BIN_DIR)$(TARGET).o
 	$(C_COMPILER) $(L_FLAGS) -o $(BIN_DIR)$(TARGET).elf $(ASM_OBJECT_FILES) $(C_OBJECT_FILES) $(CPP_OBJECT_FILES)
 
@@ -92,7 +79,6 @@ $(BIN_DIR)$(TARGET).bin: $(BIN_DIR)$(TARGET).elf
 	$(OBJECT_SIZE) $<
 
 write: $(BIN_DIR)$(TARGET).bin
-	# st-flash erase
 	st-flash write $(BIN_DIR)$(TARGET).bin 0x08000000
 
 # if ./bin/ does not exist, create the directory
