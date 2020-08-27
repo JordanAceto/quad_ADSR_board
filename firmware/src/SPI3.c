@@ -48,18 +48,6 @@ void SPI3_Init(void)
 
     // enable SPI3
     SPI3->CR1 |= SPI_CR1_SPE;
-
-    // configure the sck and mosi pins (miso is unused)
-
-    // set SPI3 SCK PC10 as output push-pull, very high speed mode, alt fcn 6
-    GPIOC->MODER |= GPIO_MODER_MODER10_1;
-    GPIOC->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR10_0 | GPIO_OSPEEDER_OSPEEDR10_1);
-    GPIOC->AFR[1] |= (GPIO_AFRH_AFSEL10_1 | GPIO_AFRH_AFSEL10_2);
-
-    // set SPI3 MOSI PC12 as output push-pull, very high speed mode, alt fcn 6
-    GPIOC->MODER |= GPIO_MODER_MODER12_1;
-    GPIOC->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR12_0 | GPIO_OSPEEDER_OSPEEDR12_1);
-    GPIOC->AFR[1] |= (GPIO_AFRH_AFSEL12_1 | GPIO_AFRH_AFSEL12_2);
 }
 
 void SPI3_Transmit(GPIO_TypeDef * CS_port, uint16_t CS_pin, uint32_t value)

@@ -15,7 +15,7 @@
 --|----------------------------------------------------------------------------|
 */
 
-#include "stm32f4xx.h"
+#include "GPIO.h"
 
 /*
 --|----------------------------------------------------------------------------|
@@ -79,7 +79,25 @@ static void set_encoder_switches_to_input_pullup(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
-    set_SPI_CV_pins_to_output
+    set_SPI_pins_to_special_function
+
+Function Description:
+    Set the SPI SCK, MISO, and MOSI pins to special function.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    None
+------------------------------------------------------------------------------*/
+static void set_SPI_pins_to_special_function(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
+    set_SPI_CS_pins_to_output
 
 Function Description:
     Set the SPI chip select pins to outputs.
@@ -93,7 +111,7 @@ Returns:
 Assumptions/Limitations:
     None
 ------------------------------------------------------------------------------*/
-static void set_SPI_CV_pins_to_output(void);
+static void set_SPI_CS_pins_to_output(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
@@ -160,7 +178,8 @@ void GPIO_Init(void)
     enable_GPIO_clocks();
     set_gate_and_trigger_inputs_to_input_pullup();
     set_encoder_switches_to_input_pullup();
-    set_SPI_CV_pins_to_output();
+    set_SPI_pins_to_special_function();
+    set_SPI_CS_pins_to_output();
     write_all_SPI_CS_pins_high();
     set_seven_seg_digit_select_pins_to_output();
     set_status_LED_pin_to_output();
@@ -180,59 +199,48 @@ void enable_GPIO_clocks(void)
 
 void set_gate_and_trigger_inputs_to_input_pullup(void)
 {
-    // PA3 is gate 1
-    GPIOA->PUPDR |= GPIO_PUPDR_PUPD3_0;
-
-    // PA4 is trigger 1
-    GPIOA->PUPDR |= GPIO_PUPDR_PUPD4_0;
-
-    // PA5 is gate 2
-    GPIOA->PUPDR |= GPIO_PUPDR_PUPD5_0;
-
-    // PA6 is trigger 2
-    GPIOA->PUPDR |= GPIO_PUPDR_PUPD6_0;
-
-    // PA7 is gate 3
-    GPIOA->PUPDR |= GPIO_PUPDR_PUPD7_0;
-
-    // PB0 is trigger 3
-    GPIOB->PUPDR |= GPIO_PUPDR_PUPD0_0;
-    
-    // PB1 is gate 5
-    GPIOB->PUPDR |= GPIO_PUPDR_PUPD1_0;
-    
-    // PB12 is trigger 4
-    GPIOB->PUPDR |= GPIO_PUPDR_PUPD12_0;
+    // each pin in the PUPD register takes up 2 bits
+    GATE_1_GPIO_Port->PUPDR |= (1u << (GATE_1_Pin << 1u));
+    GATE_2_GPIO_Port->PUPDR |= (1u << (GATE_2_Pin << 1u));
+    GATE_3_GPIO_Port->PUPDR |= (1u << (GATE_3_Pin << 1u));
+    GATE_4_GPIO_Port->PUPDR |= (1u << (GATE_4_Pin << 1u));
+    TRIG_1_GPIO_Port->PUPDR |= (1u << (TRIG_1_Pin << 1u));
+    TRIG_2_GPIO_Port->PUPDR |= (1u << (TRIG_2_Pin << 1u));
+    TRIG_3_GPIO_Port->PUPDR |= (1u << (TRIG_3_Pin << 1u));
+    TRIG_4_GPIO_Port->PUPDR |= (1u << (TRIG_4_Pin << 1u));
 }
 
 void set_encoder_switches_to_input_pullup(void)
 {
-    // PA2 is encoder 1 switch
-    GPIOA->PUPDR |= GPIO_PUPDR_PUPD2_0;
-
-    // PB15 is encoder 2 switch
-    GPIOB->PUPDR |= GPIO_PUPDR_PUPD15_0;
-
-    // PC9 is encoder 3 switch
-    GPIOC->PUPDR |= GPIO_PUPDR_PUPD9_0;
-
-    // PA15 is encoder 4 switch
-    GPIOA->PUPDR |= GPIO_PUPDR_PUPD15_0;
+    // each pin in the PUPD register takes up 2 bits
+    ENCODER_1_SWITCH_GPIO_Port->PUPDR |= (1u << (ENCODER_1_SWITCH_Pin << 1u));
+    ENCODER_2_SWITCH_GPIO_Port->PUPDR |= (1u << (ENCODER_2_SWITCH_Pin << 1u));
+    ENCODER_3_SWITCH_GPIO_Port->PUPDR |= (1u << (ENCODER_3_SWITCH_Pin << 1u));
+    ENCODER_4_SWITCH_GPIO_Port->PUPDR |= (1u << (ENCODER_4_SWITCH_Pin << 1u));
 }
 
-void set_SPI_CV_pins_to_output(void)
+void set_SPI_pins_to_special_function(void)
 {
-    // PB4 is DAC2 CS
-    GPIOB->MODER |= GPIO_MODER_MODER4_0;
+    // set SPI3 SCK PC10 as output push-pull, very high speed mode, alt fcn 6
+    GPIOC->MODER   |= GPIO_MODER_MODER10_1;
+    GPIOC->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR10_0 | GPIO_OSPEEDER_OSPEEDR10_1);
+    GPIOC->AFR[1]  |= (GPIO_AFRH_AFSEL10_1 | GPIO_AFRH_AFSEL10_2);
 
-    // PB5 is DAC1 CS
-    GPIOB->MODER |= GPIO_MODER_MODER5_0;
+    // SPI3 MISO is not used by the system
 
-    // PB9 is RG LED CS
-    GPIOB->MODER |= GPIO_MODER_MODER9_0;
+    // set SPI3 MOSI PC12 as output push-pull, very high speed mode, alt fcn 6
+    GPIOC->MODER   |= GPIO_MODER_MODER12_1;
+    GPIOC->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR12_0 | GPIO_OSPEEDER_OSPEEDR12_1);
+    GPIOC->AFR[1]  |= (GPIO_AFRH_AFSEL12_1 | GPIO_AFRH_AFSEL12_2);
+}
 
-    // PB13 is seven segment display CS
-    GPIOB->MODER |= GPIO_MODER_MODER13_0;
+void set_SPI_CS_pins_to_output(void)
+{
+    // each pin in the MODER register takes up 2 bits
+    SPI3_DAC1_CS_GPIO_Port->MODER      |= (1u << (SPI3_DAC1_CS_Pin << 1u));
+    SPI3_DAC2_CS_GPIO_Port->MODER      |= (1u << (SPI3_DAC2_CS_Pin << 1u));
+    SPI3_SEVEN_SEG_CS_GPIO_Port->MODER |= (1u << (SPI3_SEVEN_SEG_CS_Pin << 1u));
+    SPI3_RG_LEDS_CS_GPIO_Port->MODER   |= (1u << (SPI3_RG_LEDS_CS_Pin << 1u));
 }
 
 void write_all_SPI_CS_pins_high(void)
@@ -243,21 +251,15 @@ void write_all_SPI_CS_pins_high(void)
 
 void set_seven_seg_digit_select_pins_to_output(void)
 {
-    // PC8 is digit 1 select
-    GPIOC->MODER |= GPIO_MODER_MODER8_0;
-
-    // PA10 is digit 2 select
-    GPIOA->MODER |= GPIO_MODER_MODER10_0;
-
-    // PA11 is digit 3 select
-    GPIOA->MODER |= GPIO_MODER_MODER11_0;
-
-    // PA12 is digit 4 select
-    GPIOA->MODER |= GPIO_MODER_MODER12_0;
+    // each pin in the MODER register takes up 2 bits
+    SEVEN_SEG_DIGIT_1_GPIO_Port->MODER |= (1u << (SEVEN_SEG_DIGIT_1_Pin << 1u));
+    SEVEN_SEG_DIGIT_2_GPIO_Port->MODER |= (1u << (SEVEN_SEG_DIGIT_2_Pin << 1u));
+    SEVEN_SEG_DIGIT_3_GPIO_Port->MODER |= (1u << (SEVEN_SEG_DIGIT_3_Pin << 1u));
+    SEVEN_SEG_DIGIT_4_GPIO_Port->MODER |= (1u << (SEVEN_SEG_DIGIT_4_Pin << 1u));
 }
 
 void set_status_LED_pin_to_output(void)
 {
-    // PC3 is the debug status LED
-    GPIOC->MODER |= GPIO_MODER_MODER3_0;
+    // each pin in the MODER register takes up 2 bits
+    STATUS_LED_GPIO_Port->MODER |= (1u << (STATUS_LED_Pin << 1u));
 }
