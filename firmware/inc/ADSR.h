@@ -244,6 +244,7 @@ Function Description:
 
 Parameters:
     * p_ADSR: pointer to the ADSR struct to initialize.
+    sample_rate: the sample rate for the ADSR, in Hz.
 
 Returns:
     None.
@@ -251,6 +252,8 @@ Returns:
 Assumptions/Limitations:
     It is assumed that this function will be called prior to using the given
     ADSR.
+
+    Also assumed that the given ADSR will be ticked at the given sample rate.
 ------------------------------------------------------------------------------*/
 void Initialize_ADSR(ADSR_t * p_ADSR, uint32_t sample_rate);
 
