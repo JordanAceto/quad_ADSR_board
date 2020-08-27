@@ -200,6 +200,7 @@ void GPIO_Init(void)
     set_SPI_CS_pins_to_output();
     write_all_SPI_CS_pins_high();
     set_seven_seg_digit_select_pins_to_output();
+    set_I2C_pins_to_special_function();
     set_status_LED_pin_to_output();
 }
 

@@ -63,11 +63,11 @@
 typedef enum Discrete_Input_Enumeration
 {
     DISCRETE_INPUT_STATE_LOW = 0,
-	DISCRETE_INPUT_STATE_HIGH,
-	DISCRETE_INPUT_STATE_RISING_EDGE,
-	DISCRETE_INPUT_STATE_FALLING_EDGE,
-	DISCRETE_INPUT_STATE_LONG_LOW,
-	DISCRETE_INPUT_STATE_LONG_HIGH,
+    DISCRETE_INPUT_STATE_HIGH,
+    DISCRETE_INPUT_STATE_RISING_EDGE,
+    DISCRETE_INPUT_STATE_FALLING_EDGE,
+    DISCRETE_INPUT_STATE_LONG_LOW,
+    DISCRETE_INPUT_STATE_LONG_HIGH,
 } Discrete_Input_State_t;
 
 /*
@@ -76,8 +76,8 @@ typedef enum Discrete_Input_Enumeration
 */
 typedef enum Discrete_Input_Polarity_Enumeration
 {
-	DISCRETE_INPUT_POLARITY_ACTIVE_HIGH,
-	DISCRETE_INPUT_POLARITY_ACTIVE_LOW
+    DISCRETE_INPUT_POLARITY_ACTIVE_HIGH,
+    DISCRETE_INPUT_POLARITY_ACTIVE_LOW
 } Discrete_Input_Polarity_t;
 
 /*
@@ -85,22 +85,22 @@ typedef enum Discrete_Input_Polarity_Enumeration
 --| DESCRIPTION: structure for a single discrete input
 --|
 --| Members:
---|		GPIO_port: pointer to the GPIO port for the discrete input
---| 	GPIO_pin:  the GPIO pin number of the button
+--|	    GPIO_port: pointer to the GPIO port for the discrete input
+--|     GPIO_pin:  the GPIO pin number of the button
 --|
---|		state: the current enumerated state of the discrete input
+--|     state: the current enumerated state of the discrete input
 --|
---|		polarity: the polarity of the discrete input
+--|     polarity: the polarity of the discrete input
 --|
---|		debounce_count: when the discrete input consecutively reads high/low
---|			for this many readings, a rising/falling edge will be registered
+--|     debounce_count: when the discrete input consecutively reads high/low
+--|         for this many readings, a rising/falling edge will be registered
 --|
---|		long_press_count: when the discrete input consecutively reads high/low
---|			for at least this many readings, a long press/no-press will
---|			be registered
+--|     long_press_count: when the discrete input consecutively reads high/low
+--|         for at least this many readings, a long press/no-press will
+--|         be registered
 --|
---|		high_count: handled privately, the number of consecutive high readings
---|		low_count: handled privately, the number of consecutive low readings
+--|     high_count: handled privately, the number of consecutive high readings
+--|     low_count: handled privately, the number of consecutive low readings
 */
 typedef struct Discrete_Input_Type
 {
@@ -117,22 +117,6 @@ typedef struct Discrete_Input_Type
     uint32_t high_count; // private
     uint32_t low_count;  // private
 } Discrete_Input_t;
-
-/*
---|----------------------------------------------------------------------------|
---| PUBLIC CONSTANTS
---|----------------------------------------------------------------------------|
-*/
-
-/* None */
-
-/*
---|----------------------------------------------------------------------------|
---| PUBLIC VARIABLES
---|----------------------------------------------------------------------------|
-*/
-
-/* None */
 
 /*
 --|----------------------------------------------------------------------------|

@@ -37,11 +37,3 @@ void MCP4822_Write(GPIO_TypeDef *       CS_port,
 
     SPI3_Transmit(CS_port, CS_pin, word_to_write);
 }
-
-/*
---|----------------------------------------------------------------------------|
---| PRIVATE HELPER FUNCTION DEFINITIONS
---|----------------------------------------------------------------------------|
-*/
-
-/* None */
