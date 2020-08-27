@@ -137,7 +137,7 @@ Parameters:
     digit: the 10's place of the digit you want to extract
 
 Returns:
-    None.
+    uint32_t: the digit at the desired position
 
 Assumptions/Limitations:
     None
