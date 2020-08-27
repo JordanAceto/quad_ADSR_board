@@ -245,8 +245,10 @@ void set_SPI_CS_pins_to_output(void)
 
 void write_all_SPI_CS_pins_high(void)
 {
-    // the SPI CS pins happen to all be in port B
-    GPIOB->BSRR = (GPIO_BSRR_BS4 | GPIO_BSRR_BS5 | GPIO_BSRR_BS9 | GPIO_BSRR_BS13);
+    SPI3_DAC1_CS_GPIO_Port->BSRR      = (1u << SPI3_DAC1_CS_Pin);
+    SPI3_DAC2_CS_GPIO_Port->BSRR      = (1u << SPI3_DAC2_CS_Pin);
+    SPI3_SEVEN_SEG_CS_GPIO_Port->BSRR = (1u << SPI3_SEVEN_SEG_CS_Pin);
+    SPI3_RG_LEDS_CS_GPIO_Port->BSRR   = (1u << SPI3_RG_LEDS_CS_Pin);
 }
 
 void set_seven_seg_digit_select_pins_to_output(void)
