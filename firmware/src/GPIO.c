@@ -151,6 +151,24 @@ static void set_seven_seg_digit_select_pins_to_output(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
+    set_I2C_pins_to_special_function
+
+Function Description:
+    Set the I2C SDA and SCL pins to special function.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    None
+------------------------------------------------------------------------------*/
+static void set_I2C_pins_to_special_function(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
     set_status_LED_pin_to_output
 
 Function Description:
@@ -222,14 +240,14 @@ void set_encoder_switches_to_input_pullup(void)
 void set_SPI_pins_to_special_function(void)
 {
     // set SPI3 SCK PC10 as output push-pull, very high speed mode, alt fcn 6
-    GPIOC->MODER   |= GPIO_MODER_MODER10_1;
+    GPIOC->MODER   |= (GPIO_MODER_MODER10_1);
     GPIOC->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR10_0 | GPIO_OSPEEDER_OSPEEDR10_1);
     GPIOC->AFR[1]  |= (GPIO_AFRH_AFSEL10_1 | GPIO_AFRH_AFSEL10_2);
 
     // SPI3 MISO is not used by the system
 
     // set SPI3 MOSI PC12 as output push-pull, very high speed mode, alt fcn 6
-    GPIOC->MODER   |= GPIO_MODER_MODER12_1;
+    GPIOC->MODER   |= (GPIO_MODER_MODER12_1);
     GPIOC->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR12_0 | GPIO_OSPEEDER_OSPEEDR12_1);
     GPIOC->AFR[1]  |= (GPIO_AFRH_AFSEL12_1 | GPIO_AFRH_AFSEL12_2);
 }
@@ -258,6 +276,23 @@ void set_seven_seg_digit_select_pins_to_output(void)
     SEVEN_SEG_DIGIT_2_GPIO_Port->MODER |= (1u << (SEVEN_SEG_DIGIT_2_Pin << 1u));
     SEVEN_SEG_DIGIT_3_GPIO_Port->MODER |= (1u << (SEVEN_SEG_DIGIT_3_Pin << 1u));
     SEVEN_SEG_DIGIT_4_GPIO_Port->MODER |= (1u << (SEVEN_SEG_DIGIT_4_Pin << 1u));
+}
+
+void set_I2C_pins_to_special_function(void)
+{
+    // set I2C2 SCL PB10 pin as open drain, pullup, very high speed, alt fcn 4
+    GPIOB->MODER   |= (GPIO_MODER_MODER10_1);
+    GPIOB->OTYPER  |= (GPIO_OTYPER_OT10);
+    GPIOB->PUPDR   |= (GPIO_PUPDR_PUPD10_0);
+    GPIOB->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR10_0 | GPIO_OSPEEDER_OSPEEDR10_1);
+    GPIOB->AFR[1]  |= (GPIO_AFRH_AFSEL10_2);
+
+    // set I2C2 SDA PB11 as open drain, pullup, very high speed, alt fcn 4
+    GPIOB->MODER   |= (GPIO_MODER_MODER11_1);
+    GPIOB->OTYPER  |= (GPIO_OTYPER_OT11);
+    GPIOB->PUPDR   |= (GPIO_PUPDR_PUPD11_0);
+    GPIOB->OSPEEDR |= (GPIO_OSPEEDER_OSPEEDR11_0 | GPIO_OSPEEDER_OSPEEDR11_1);
+    GPIOB->AFR[1]  |= (GPIO_AFRH_AFSEL11_2);
 }
 
 void set_status_LED_pin_to_output(void)
