@@ -257,7 +257,19 @@ void set_SPI_CS_pins_to_output(void)
 {
     // each pin in the MODER register takes up 2 bits
     SPI3_DAC1_CS_GPIO_Port->MODER      |= (1u << (SPI3_DAC1_CS_Pin << 1u));
+
+    /* 
+        For the DAC2 CS pin, I accidentally put it on PB4, which is used as the
+        NJTRST JTAG pin. In order to use PB4 we must first clear out the MODER
+        bits for alt fcn 0 which are set automatically. After clearing out the
+        GPIOB->MODER bits for PB4 we can set PB4 to be an output normally.
+
+        If a board revision ever happens, put the DAC2 CS pin somewhere else and
+        delete the code below which clears out MODER 4 in GPIOB.
+    */
+    GPIOB->MODER &= ~(GPIO_MODER_MODER4_Msk);
     SPI3_DAC2_CS_GPIO_Port->MODER      |= (1u << (SPI3_DAC2_CS_Pin << 1u));
+
     SPI3_SEVEN_SEG_CS_GPIO_Port->MODER |= (1u << (SPI3_SEVEN_SEG_CS_Pin << 1u));
     SPI3_RG_LEDS_CS_GPIO_Port->MODER   |= (1u << (SPI3_RG_LEDS_CS_Pin << 1u));
 }
