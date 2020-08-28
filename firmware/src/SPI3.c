@@ -52,16 +52,16 @@ void SPI3_Init(void)
 
 void SPI3_Transmit(GPIO_TypeDef * CS_port, uint16_t CS_pin, uint32_t value)
 {
-    while (!(SPI3->SR & SPI_SR_TXE))
-    {
-        // wait for TX buffer to be empty
-    }
-
     // set the chip select pin low
     CS_port->BSRR = (0x10000u << CS_pin);
 
     // write the value to the data register
     SPI3->DR = value;
+
+    while (!(SPI3->SR & SPI_SR_TXE))
+    {
+        // wait for TX buffer to be empty
+    }
 
     while (SPI3->SR & SPI_SR_BSY)
     {
