@@ -4,4 +4,4 @@
 
 - ### `main_pcb` contains everything you need to build and/or modify the main circuit board. 
 
-- ### `front_panel` contains documents for making a low cost pcb ftont panel.
+- ### `front_panel` contains documents for making a low cost pcb front panel.
