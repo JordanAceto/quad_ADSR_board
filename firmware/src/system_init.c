@@ -24,6 +24,7 @@
 #include "RCC.h"
 #include "SPI3.h"
 #include "stm32f4xx.h"
+#include "TIM6.h"
 #include "TIM7.h"
 
 /*
@@ -72,6 +73,7 @@ void SystemInit(void)
     RCC_Init();
     GPIO_Init();
     SPI3_Init();
+    TIM6_Init();
     TIM7_Init();
     interrupts_Init();
     
