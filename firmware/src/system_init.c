@@ -21,6 +21,7 @@
 
 #include "GPIO.h"
 #include "SPI3.h"
+#include "RCC.h"
 #include "stm32f4xx.h"
 
 /*
@@ -34,14 +35,14 @@
 --| DESCRIPTION: Default value of the External oscillator in Hz
 --| TYPE: uint32_t
 */
-#define HSE_VALUE ((uint32_t)8E6)
+#define HSE_VALUE ((uint32_t)16E6)
 
 /*
 --| NAME: HSE_VALUE
 --| DESCRIPTION: Default value of the Internal RC oscillator in Hz
 --| TYPE: uint32_t
 */
-#define HSI_VALUE ((uint32_t)8E6)
+#define HSI_VALUE ((uint32_t)16E6)
 
 /*
 --|----------------------------------------------------------------------------|
@@ -54,7 +55,7 @@
 --| DESCRIPTION: System Core Clock frequency in Hz
 --| TYPE: uint32_t
 */
-uint32_t SystemCoreClock = 72E6;
+uint32_t SystemCoreClock = 84E6;
 
 /*
 --|----------------------------------------------------------------------------|
@@ -66,8 +67,8 @@ void SystemInit(void)
 {
     __disable_irq();
 
+    RCC_Init();
     GPIO_Init();
-
     SPI3_Init();
     
     __enable_irq();
