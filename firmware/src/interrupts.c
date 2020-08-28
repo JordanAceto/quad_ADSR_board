@@ -29,11 +29,18 @@
 // note that for interrupts, higher numbers mean lower priority
 
 /*
---| NAME: TIM3_IRQ_PRIORITY
+--| NAME: TIM6_IRQ_PRIORITY
+--| DESCRIPTION: the priority of the TIM6 interrupt
+--| TYPE: uint
+*/
+#define TIM6_IRQ_PRIORITY (0)
+
+/*
+--| NAME: TIM6_IRQ_PRIORITY
 --| DESCRIPTION: the priority of the TIM7 interrupt
 --| TYPE: uint
 */
-#define TIM7_IRQ_PRIORITY (0)
+#define TIM7_IRQ_PRIORITY (1)
 
 
 /*
@@ -44,17 +51,28 @@
 
 void interrupts_Init(void)
 {
+    // enable the TIM6 IRQ
+    NVIC_SetPriority(TIM6_DAC_IRQn, TIM6_IRQ_PRIORITY);
+    NVIC_EnableIRQ(TIM6_DAC_IRQn);
+
     // enable the TIM7 IRQ
     NVIC_SetPriority(TIM7_IRQn, TIM7_IRQ_PRIORITY);
     NVIC_EnableIRQ(TIM7_IRQn);
+}
 
-
+void TIM6_DAC_IRQHandler(void)
+{
+    // toggle the LED as a test
+    STATUS_LED_GPIO_Port->ODR ^= (1u << STATUS_LED_Pin);
+    
+    // clear the Update Interrupt flag
+    TIM6->SR &= ~TIM_SR_UIF;
 }
 
 void TIM7_IRQHandler(void)
 {
     // toggle the LED as a test
-    STATUS_LED_GPIO_Port->ODR ^= (1u << STATUS_LED_Pin);
+    // STATUS_LED_GPIO_Port->ODR ^= (1u << STATUS_LED_Pin);
     
     // clear the Update Interrupt flag
     TIM7->SR &= ~TIM_SR_UIF;

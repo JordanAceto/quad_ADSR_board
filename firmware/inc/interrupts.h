@@ -39,6 +39,24 @@ void interrupts_Init(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
+    TIM6_DAC_IRQHandler
+
+Function Description:
+    IRQ handler for the TIM6 interrupt.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    Called automatically, do not call this function.
+------------------------------------------------------------------------------*/
+void TIM6_DAC_IRQHandler(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
     TIM7_IRQHandler
 
 Function Description:
