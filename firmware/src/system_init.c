@@ -20,9 +20,11 @@
 */
 
 #include "GPIO.h"
-#include "SPI3.h"
+#include "interrupts.h"
 #include "RCC.h"
+#include "SPI3.h"
 #include "stm32f4xx.h"
+#include "TIM7.h"
 
 /*
 --|----------------------------------------------------------------------------|
@@ -70,6 +72,8 @@ void SystemInit(void)
     RCC_Init();
     GPIO_Init();
     SPI3_Init();
+    TIM7_Init();
+    interrupts_Init();
     
     __enable_irq();
 }
