@@ -62,6 +62,25 @@ void poll_pushbuttons(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
+    update_ADSR_inputs
+
+Function Description:
+    Update the Attack, Decay, Sustain, and Release inputs for each of the
+    four ADSRs based on the encoder readings and current mode.
+
+Parameters:
+    None.
+
+Returns:
+    None.
+
+Assumptions/Limitations:
+    Assumes that all initialization is complete.
+------------------------------------------------------------------------------*/
+void update_ADSR_inputs(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
     poll_gate_and_trigger_inputs
 
 Function Description:

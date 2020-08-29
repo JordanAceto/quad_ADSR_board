@@ -44,26 +44,7 @@ Returns:
 Assumptions/Limitations:
     Assumes that all initialization is complete.
 ------------------------------------------------------------------------------*/
-void lock_encoders_to_active_adsr(void);
-
-/*------------------------------------------------------------------------------
-Function Name:
-    update_ADSR_inputs
-
-Function Description:
-    Update the Attack, Decay, Sustain, and Release inputs for each of the
-    four ADSRs based on the encoder readings and current mode.
-
-Parameters:
-    None.
-
-Returns:
-    None.
-
-Assumptions/Limitations:
-    Assumes that all initialization is complete.
-------------------------------------------------------------------------------*/
-void update_ADSR_inputs(void);
+static void lock_encoders_to_active_adsr(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
@@ -104,7 +85,7 @@ Assumptions/Limitations:
     Configuring the timer as a 16 bit up-counter allows the clamping routine
     to work.
 ------------------------------------------------------------------------------*/
-uint32_t encoder_count_to_ADR_param(TIM_TypeDef * tim_x);
+static uint32_t encoder_count_to_ADR_param(TIM_TypeDef * tim_x);
 
 /*------------------------------------------------------------------------------
 Function Name:
@@ -133,7 +114,7 @@ Assumptions/Limitations:
     Configuring the timer as a 16 bit up-counter allows the clamping routine
     to work.
 ------------------------------------------------------------------------------*/
-uint32_t encoder_count_to_S_param(TIM_TypeDef * tim_x);
+static uint32_t encoder_count_to_S_param(TIM_TypeDef * tim_x);
 
 /*------------------------------------------------------------------------------
 Function Name:
@@ -158,7 +139,7 @@ Assumptions/Limitations:
 
     Assumes that the given ADR_param is within the bounds of that param type.
 ------------------------------------------------------------------------------*/
-void ADR_param_to_encoder_count(TIM_TypeDef * tim_x, uint32_t ADR_param);
+static void ADR_param_to_encoder_count(TIM_TypeDef * tim_x, uint32_t ADR_param);
 
 /*------------------------------------------------------------------------------
 Function Name:
@@ -181,7 +162,7 @@ Assumptions/Limitations:
 
     Assumes that the given S_param is within the bounds of that param type.
 ------------------------------------------------------------------------------*/
-void S_param_to_encoder_count(TIM_TypeDef * tim_x, uint32_t S_param);
+static void S_param_to_encoder_count(TIM_TypeDef * tim_x, uint32_t S_param);
 
 /*
 --|----------------------------------------------------------------------------|
@@ -227,6 +208,27 @@ void poll_pushbuttons(void)
     }
 }
 
+void update_ADSR_inputs(void)
+{
+    if (adsr_mode == ADSR_MODE_INDEPENDENT) // only update the active ADSR
+    {
+        adsr[active_adsr].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]);
+        adsr[active_adsr].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec]);
+        adsr[active_adsr].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = encoder_count_to_S_param(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]);
+        adsr[active_adsr].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]);
+    }
+    else // it is lock-to-master mode, so update the inputs to all the ADSRs
+    {
+        for (int i = 0; i < NUM_ADSRs; ++i)
+        {
+            adsr[i].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]);
+            adsr[i].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec]);
+            adsr[i].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = encoder_count_to_S_param(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]);
+            adsr[i].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]);
+        }
+    }
+}
+
 void poll_gate_and_trigger_inputs(void)
 {
     // poll each trigger and gate input
@@ -268,27 +270,6 @@ void lock_encoders_to_active_adsr(void)
     for (int i = 0; i < NUM_ADSR_INPUT_TYPES; ++i)
     {
         cached_encoder_reading[i] = p_encoder[i]->CNT;
-    }
-}
-
-void update_ADSR_inputs(void)
-{
-    if (adsr_mode == ADSR_MODE_INDEPENDENT) // only update the active ADSR
-    {
-        adsr[active_adsr].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]);
-        adsr[active_adsr].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec]);
-        adsr[active_adsr].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = encoder_count_to_S_param(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]);
-        adsr[active_adsr].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]);
-    }
-    else // it is lock-to-master mode, so update the inputs to all the ADSRs
-    {
-        for (int i = 0; i < NUM_ADSRs; ++i)
-        {
-            adsr[i].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]);
-            adsr[i].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec]);
-            adsr[i].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = encoder_count_to_S_param(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]);
-            adsr[i].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]);
-        }
     }
 }
 
