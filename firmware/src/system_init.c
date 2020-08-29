@@ -59,7 +59,7 @@
 --| DESCRIPTION: System Core Clock frequency in Hz
 --| TYPE: uint32_t
 */
-uint32_t SystemCoreClock = 84E6;
+uint32_t SystemCoreClock = 50E6;
 
 /*
 --|----------------------------------------------------------------------------|
@@ -77,7 +77,7 @@ void SystemInit(void)
     SPI3_Init();
     TIM6_Init();
     TIM7_Init();
-    // interrupts_Init();
+    interrupts_Init();
     
     __enable_irq();
 }

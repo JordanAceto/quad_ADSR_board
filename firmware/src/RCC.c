@@ -27,6 +27,19 @@
 
 void RCC_Init(void)
 {
+    /*
+    // test code to view the pll output freq on PC9
+
+    // set MCO2 to use PLL
+    RCC->CFGR |= RCC_CFGR_MCO2_0 | RCC_CFGR_MCO2_1;
+    // divide MCO2 by 5
+    RCC->CFGR |= RCC_CFGR_MCO2PRE_0 | RCC_CFGR_MCO2PRE_1 | RCC_CFGR_MCO2PRE_2;
+    // make sure port c is enabled
+    RCC->AHB1ENR |= RCC_AHB1ENR_GPIOCEN;
+    // set PC9 to af, MCO2 output
+    GPIOC->MODER |= GPIO_MODER_MODER9_1;
+    */
+
     // set 2 FLASH controller wait states for 60 < HCLK <= 90
     FLASH->ACR |= FLASH_ACR_LATENCY_2WS;
 
@@ -48,21 +61,20 @@ void RCC_Init(void)
     // set the PLL clock source to HSE
     RCC->PLLCFGR |= RCC_PLLCFGR_PLLSRC_HSE;
 
-    // set the PLL divider Q to divide by 4
-    RCC->PLLCFGR |= RCC_PLLCFGR_PLLQ_3;
+    // set the PLL divider M to divide by 16
+    RCC->PLLCFGR |= (16u << 0u);
 
-    // set the PLL divider M to divide by 8
-    RCC->PLLCFGR |= RCC_PLLCFGR_PLLM_3;
-
-    // set the PLL multiplier N to multiply by 168
-    RCC->PLLCFGR |= (RCC_PLLCFGR_PLLN_3 | RCC_PLLCFGR_PLLN_5 | RCC_PLLCFGR_PLLN_7);
+    // set the PLL multiplier N to multiply by 200
+    RCC->PLLCFGR |= (200u << 6u);
 
     // set the PLL divider P to divide by 4
-    RCC->PLLCFGR |= RCC_PLLCFGR_PLLP_0;
+    RCC->PLLCFGR |= (1u << 16u);
 
-    // the external 16MHz xtal is now multiplied to 84MHz [(16 / 8) * 168] / 4 = 84
+    // the external 16MHz xtal is now multiplied to 50MHz: [(16 / 16) * 200] / 4 = 50
 
-    // TODO: Something is wrong though, the clock is actually more like 77.3MHz, pls investigate
+    // TODO: Something is wrong, I can't get certain pll frequencies to work right
+    // the above setting works, but other N, M, and P settings do not produce the
+    // expected frequencies. Ex: M = 8, N = 168, P = 4 should result in 84MHz, but it doesn't?
 
     // turn on the PLL
     RCC->CR |= RCC_CR_PLLON;

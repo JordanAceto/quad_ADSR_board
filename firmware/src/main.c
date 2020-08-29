@@ -13,7 +13,7 @@ int main(void)
         
         SysTick_Delay_mSec(10);
 
-        STATUS_LED_GPIO_Port->ODR ^= (1u << STATUS_LED_Pin);
+        // STATUS_LED_GPIO_Port->ODR ^= (1u << STATUS_LED_Pin);
 
         SPI3_Transmit(SPI3_DAC2_CS_GPIO_Port, SPI3_DAC2_CS_Pin, 0xDEADu);
     }

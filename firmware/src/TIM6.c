@@ -32,8 +32,8 @@ void TIM6_Init(void)
     // enable clock control for timer 6
     RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
 
-    // set the period for the TIM6 interrupt
-    TIM6->PSC = 3863u;
+    // set the period for the TIM6 interrupt = 10kHz
+    TIM6->PSC = 499u;
     TIM6->ARR = 9u;
 
     // enable update interrupts

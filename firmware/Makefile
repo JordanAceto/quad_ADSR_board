@@ -79,7 +79,7 @@ $(BIN_DIR)$(TARGET).bin: $(BIN_DIR)$(TARGET).elf
 	$(OBJECT_SIZE) $<
 
 write: $(BIN_DIR)$(TARGET).bin
-	st-flash write $(BIN_DIR)$(TARGET).bin 0x08000000
+	st-flash --reset write $(BIN_DIR)$(TARGET).bin 0x08000000
 
 # if ./bin/ does not exist, create the directory
 $(BIN_DIR):
