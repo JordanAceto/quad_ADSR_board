@@ -19,6 +19,7 @@
 --|----------------------------------------------------------------------------|
 */
 
+#include "encoders.h"
 #include "GPIO.h"
 #include "interrupts.h"
 #include "RCC.h"
@@ -77,6 +78,7 @@ void SystemInit(void)
     SPI3_Init();
     TIM6_Init();
     TIM7_Init();
+    encoders_Init();
     interrupts_Init();
     
     __enable_irq();
