@@ -30,6 +30,13 @@ void RCC_Init(void)
     // set 2 FLASH controller wait states for 60 < HCLK <= 90
     FLASH->ACR |= FLASH_ACR_LATENCY_2WS;
 
+    // set the clock dividers
+    RCC->CFGR |= RCC_CFGR_HPRE_DIV1;  // AHB:  84MHz
+
+    RCC->CFGR |= RCC_CFGR_PPRE1_DIV2; // APB1: 42MHz
+
+    RCC->CFGR |= RCC_CFGR_PPRE2_DIV2; // APB2: 42MHz
+
     // enable the external 16MHz high speed clock
     RCC->CR |= RCC_CR_HSEON;
 
@@ -37,6 +44,12 @@ void RCC_Init(void)
     {
         // wait for the external clock to be ready
     }
+
+    // set the PLL clock source to HSE
+    RCC->PLLCFGR |= RCC_PLLCFGR_PLLSRC_HSE;
+
+    // set the PLL divider Q to divide by 4
+    RCC->PLLCFGR |= RCC_PLLCFGR_PLLQ_3;
 
     // set the PLL divider M to divide by 8
     RCC->PLLCFGR |= RCC_PLLCFGR_PLLM_3;
@@ -49,8 +62,7 @@ void RCC_Init(void)
 
     // the external 16MHz xtal is now multiplied to 84MHz [(16 / 8) * 168] / 4 = 84
 
-    // set the PLL clock source to HSE
-    RCC->PLLCFGR |= RCC_PLLCFGR_PLLSRC_HSE;
+    // TODO: Something is wrong though, the clock is actually more like 77.3MHz, pls investigate
 
     // turn on the PLL
     RCC->CR |= RCC_CR_PLLON;
@@ -59,13 +71,6 @@ void RCC_Init(void)
     {
         // wait for the PLL to lock
     }
-
-    // set the clock dividers
-    RCC->CFGR |= RCC_CFGR_HPRE_DIV1;  // AHB:  84MHz
-
-    RCC->CFGR |= RCC_CFGR_PPRE1_DIV2; // APB1: 42MHz
-
-    RCC->CFGR |= RCC_CFGR_PPRE2_DIV1; // APB2: 84MHz
 
     // select the PLL as the system clock
     RCC->CFGR |= RCC_CFGR_SW_PLL;
