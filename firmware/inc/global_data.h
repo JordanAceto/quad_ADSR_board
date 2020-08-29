@@ -22,7 +22,7 @@
 
 #include "ADSR.h"
 #include "Discrete_Input.h"
-#include "GPIO.h"
+#include <stdbool.h>
 
 /*
 --|----------------------------------------------------------------------------|
@@ -124,170 +124,42 @@ ADSR_t adsr[NUM_ADSRs];
 --| DESCRIPTION: the index of the adsr that is currently selected, range: [0, NUM_ADSRs - 1]
 --| TYPE: uint8_t
 */
-uint8_t active_adsr = 0;
+uint8_t active_adsr;
 
 /*
 --| NAME: adsr_mode
 --| DESCRIPTION: the current mode, independent or lock-to-master
 --| TYPE: ADSR_Mode_t
 */
-ADSR_Mode_t adsr_mode = ADSR_MODE_INDEPENDENT;
+ADSR_Mode_t adsr_mode;
+
+/*
+--| NAME: p_encoder
+--| DESCRIPTION: array of pointers to the four TIMx timers configured as encoders
+--| TYPE: TIM_TypeDef
+*/
+TIM_TypeDef * p_encoder[NUM_ADSR_INPUT_TYPES];
 
 /*
 --| NAME: gate_input
 --| DESCRIPTION: array of gate inputs
 --| TYPE: Discrete_Input_t
 */
-Discrete_Input_t gate_input[NUM_ADSRs] =
-{
-    {
-        GATE_1_GPIO_Port,
-        GATE_1_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        GATE_AND_TRIGGER_DEBOUNCE_COUNT,
-        DISCRETE_INPUT_DISABLE_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        GATE_2_GPIO_Port,
-        GATE_2_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        GATE_AND_TRIGGER_DEBOUNCE_COUNT,
-        DISCRETE_INPUT_DISABLE_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        GATE_3_GPIO_Port,
-        GATE_3_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        GATE_AND_TRIGGER_DEBOUNCE_COUNT,
-        DISCRETE_INPUT_DISABLE_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        GATE_4_GPIO_Port,
-        GATE_4_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        GATE_AND_TRIGGER_DEBOUNCE_COUNT,
-        DISCRETE_INPUT_DISABLE_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    }
-};
+Discrete_Input_t gate_input[NUM_ADSRs];
 
 /*
 --| NAME: trigger_input
 --| DESCRIPTION: array of trigger inputs
 --| TYPE: Discrete_Input_t
 */
-Discrete_Input_t trigger_input[NUM_ADSRs] =
-{
-    {
-        TRIG_1_GPIO_Port,
-        TRIG_1_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        GATE_AND_TRIGGER_DEBOUNCE_COUNT,
-        DISCRETE_INPUT_DISABLE_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        TRIG_2_GPIO_Port,
-        TRIG_2_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        GATE_AND_TRIGGER_DEBOUNCE_COUNT,
-        DISCRETE_INPUT_DISABLE_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        TRIG_3_GPIO_Port,
-        TRIG_3_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        GATE_AND_TRIGGER_DEBOUNCE_COUNT,
-        DISCRETE_INPUT_DISABLE_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        TRIG_4_GPIO_Port,
-        TRIG_4_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        GATE_AND_TRIGGER_DEBOUNCE_COUNT,
-        DISCRETE_INPUT_DISABLE_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    }
-};
+Discrete_Input_t trigger_input[NUM_ADSRs];
 
 /*
---| NAME: button
+--| NAME: pushbutton
 --| DESCRIPTION: array of the four encoder pushbuttons
 --| TYPE: Discrete_Input_t
 */
-Discrete_Input_t button[NUM_ADSR_INPUT_TYPES] =
-{
-    {
-        ENCODER_1_SWITCH_GPIO_Port,
-        ENCODER_1_SWITCH_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        PUSHBUTTON_DEBOUNCE_COUNT,
-        PUSHBUTTON_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        ENCODER_2_SWITCH_GPIO_Port,
-        ENCODER_2_SWITCH_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        PUSHBUTTON_DEBOUNCE_COUNT,
-        PUSHBUTTON_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        ENCODER_3_SWITCH_GPIO_Port,
-        ENCODER_3_SWITCH_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        PUSHBUTTON_DEBOUNCE_COUNT,
-        PUSHBUTTON_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-
-    {
-        ENCODER_4_SWITCH_GPIO_Port,
-        ENCODER_4_SWITCH_Pin,
-        DISCRETE_INPUT_DEFAULT_INITIAL_STATE,
-        DISCRETE_INPUT_POLARITY_ACTIVE_LOW,
-        PUSHBUTTON_DEBOUNCE_COUNT,
-        PUSHBUTTON_LONG_PRESS_COUNT,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING,
-        DEFAULT_DISCRETE_INPUT_PRIVATE_SETTING
-    },
-};
+Discrete_Input_t pushbutton[NUM_ADSR_INPUT_TYPES];
 
 /*
 --| NAME: cached_encoder_reading
@@ -301,13 +173,13 @@ uint16_t cached_encoder_reading[NUM_ADSR_INPUT_TYPES];
 --| DESCRIPTION: represents the encoder which was last adjusted by the user
 --| TYPE: ADSR_input_t
 */
-ADSR_input_t active_encoder = ADSR_INPUT_TYPE_ATTACK_TIME_mSec;
+ADSR_input_t active_encoder;
 
 /*
 --| NAME: eeprom_save_allowed
 --| DESCRIPTION: boolean guard, allows or forbids writing to the EEPROM
 --| TYPE: bool
 */
-bool eeprom_save_allowed = 0;
+bool eeprom_save_allowed;
 
 #endif
