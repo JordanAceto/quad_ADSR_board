@@ -61,6 +61,24 @@ static void set_gate_and_trigger_inputs_to_input_pullup(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
+    set_encoder_pins_to_alt_fcn_with_pullup
+
+Function Description:
+    Set the encoder pins to alternate function and enable pullups.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    None
+------------------------------------------------------------------------------*/
+static void set_encoder_pins_to_alt_fcn_with_pullup(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
     set_encoder_switches_to_input_pullup
 
 Function Description:
@@ -195,6 +213,7 @@ void GPIO_Init(void)
 {
     enable_GPIO_clocks();
     set_gate_and_trigger_inputs_to_input_pullup();
+    set_encoder_pins_to_alt_fcn_with_pullup();
     set_encoder_switches_to_input_pullup();
     set_SPI_pins_to_special_function();
     set_SPI_CS_pins_to_output();
@@ -227,6 +246,35 @@ void set_gate_and_trigger_inputs_to_input_pullup(void)
     TRIG_2_GPIO_Port->PUPDR |= (1u << (TRIG_2_Pin << 1u));
     TRIG_3_GPIO_Port->PUPDR |= (1u << (TRIG_3_Pin << 1u));
     TRIG_4_GPIO_Port->PUPDR |= (1u << (TRIG_4_Pin << 1u));
+}
+
+void set_encoder_pins_to_alt_fcn_with_pullup(void)
+{
+    // each pin in the MODER and PUPD registers takes up 2 bits
+
+    ENCODER_1_A_GPIO_Port->MODER |= (2u << (ENCODER_1_A_Pin < 1u));
+    ENCODER_1_A_GPIO_Port->PUPDR |= (1u << (ENCODER_1_A_Pin << 1u));
+
+    ENCODER_1_B_GPIO_Port->MODER |= (2u << (ENCODER_1_B_Pin < 1u));
+    ENCODER_1_B_GPIO_Port->PUPDR |= (1u << (ENCODER_1_B_Pin << 1u));
+
+    ENCODER_2_A_GPIO_Port->MODER |= (2u << (ENCODER_2_A_Pin < 1u));
+    ENCODER_2_A_GPIO_Port->PUPDR |= (1u << (ENCODER_2_A_Pin << 1u));
+
+    ENCODER_2_B_GPIO_Port->MODER |= (2u << (ENCODER_2_B_Pin < 1u));
+    ENCODER_2_B_GPIO_Port->PUPDR |= (1u << (ENCODER_2_B_Pin << 1u));
+
+    ENCODER_3_A_GPIO_Port->MODER |= (2u << (ENCODER_3_A_Pin < 1u));
+    ENCODER_3_A_GPIO_Port->PUPDR |= (1u << (ENCODER_3_A_Pin << 1u));
+
+    ENCODER_3_B_GPIO_Port->MODER |= (2u << (ENCODER_3_B_Pin < 1u));
+    ENCODER_3_B_GPIO_Port->PUPDR |= (1u << (ENCODER_3_B_Pin << 1u));
+
+    ENCODER_4_A_GPIO_Port->MODER |= (2u << (ENCODER_4_A_Pin < 1u));
+    ENCODER_4_A_GPIO_Port->PUPDR |= (1u << (ENCODER_4_A_Pin << 1u));
+
+    ENCODER_4_B_GPIO_Port->MODER |= (2u << (ENCODER_4_B_Pin < 1u));
+    ENCODER_4_B_GPIO_Port->PUPDR |= (1u << (ENCODER_4_B_Pin << 1u));
 }
 
 void set_encoder_switches_to_input_pullup(void)
