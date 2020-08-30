@@ -106,6 +106,7 @@ void poll_gate_and_trigger_inputs(void)
     // poll each trigger and gate input
     for (int i = 0; i < NUM_ADSRs; ++i)
     {
+        Poll_Discrete_Input(&gate_input[i]);
         Poll_Discrete_Input(&trigger_input[i]);
 
         // start an attack phase on rising gate or trigger edges
@@ -113,8 +114,6 @@ void poll_gate_and_trigger_inputs(void)
         {
             ADSR_Gate_On_Event(&adsr[i]);
         }
-
-        Poll_Discrete_Input(&gate_input[i]);
 
         // start a release phase on falling gate edges
         if (gate_input[i].state == DISCRETE_INPUT_STATE_FALLING_EDGE)
