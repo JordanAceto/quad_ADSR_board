@@ -48,7 +48,8 @@ void encoders_Init(void)
         // config CC2 channel as input mapped to TI2
         p_encoder[i]->CCMR1 |= TIM_CCMR1_CC2S_0;
 
-        // TODO: encoders count backwards, invert them pls
+        // invert an edge so that the encoders count correctly with the pcb layout
+        p_encoder[i]->CCER |= (TIM_CCER_CC1P);
 
         // enable the encoder timer
         p_encoder[i]->CR1 |= TIM_CR1_CEN;
