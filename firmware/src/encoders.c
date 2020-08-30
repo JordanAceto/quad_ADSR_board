@@ -29,6 +29,11 @@
 
 void encoders_Init(void)
 {
+    // enable clock control for the timers used as encoders
+    RCC->APB1ENR |= (RCC_APB1ENR_TIM2EN | RCC_APB1ENR_TIM4EN);
+    RCC->APB2ENR |= (RCC_APB2ENR_TIM1EN | RCC_APB2ENR_TIM8EN);
+
+    // set the four hardware timers to encoder mode
     for (int i = 0; i < NUM_ADSR_INPUT_TYPES; ++i)
     {
         // set the auto-reload register to a high value that it will never run into
@@ -43,9 +48,7 @@ void encoders_Init(void)
         // config CC2 channel as input mapped to TI2
         p_encoder[i]->CCMR1 |= TIM_CCMR1_CC2S_0;
 
-        // configure the input filters
-        p_encoder[i]->CCMR1 |= (TIM_CCMR1_IC1F_0 | TIM_CCMR1_IC1F_1);
-        p_encoder[i]->CCMR1 |= (TIM_CCMR1_IC2F_0 | TIM_CCMR1_IC2F_1);
+        // TODO: encoders count backwards, invert them pls
 
         // enable the encoder timer
         p_encoder[i]->CR1 |= TIM_CR1_CEN;

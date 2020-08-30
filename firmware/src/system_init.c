@@ -19,8 +19,11 @@
 --|----------------------------------------------------------------------------|
 */
 
+#include "ADSR.h"
 #include "encoders.h"
+#include "global_data.h"
 #include "GPIO.h"
+#include "input_processing.h"
 #include "interrupts.h"
 #include "RCC.h"
 #include "SPI3.h"
@@ -80,6 +83,15 @@ void SystemInit(void)
     TIM7_Init();
     encoders_Init();
     interrupts_Init();
+
+    ADSR_Initialize_Look_Up_Tables();
+    
+    for (int i = 0; i < NUM_ADSRs; ++i)
+    {
+        Initialize_ADSR(&adsr[i], ADSR_SAMPLE_RATE_Hz);
+    }
+
+    lock_encoders_to_active_adsr();
     
     __enable_irq();
 }

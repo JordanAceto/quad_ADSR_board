@@ -61,6 +61,27 @@ void poll_pushbuttons(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
+    lock_encoders_to_active_adsr
+
+Function Description:
+    Lock the encoders to the active ADSR. This means that rotating the encoders
+    will update the active ADSR, the bi-color LEDs will show the position of
+    the active ADSR, and the seven-segment LEDs will display parameters from
+    the active ADSR.
+
+Parameters:
+    None
+
+Returns:
+    None.
+
+Assumptions/Limitations:
+    Assumes that all initialization is complete.
+------------------------------------------------------------------------------*/
+void lock_encoders_to_active_adsr(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
     update_ADSR_inputs
 
 Function Description:

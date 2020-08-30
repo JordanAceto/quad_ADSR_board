@@ -18,6 +18,8 @@
 */
 
 #include "GPIO.h"
+#include "input_processing.h"
+#include "output_processing.h"
 #include "stm32f4xx.h"
 
 /*
@@ -62,18 +64,34 @@ void interrupts_Init(void)
 
 void TIM6_DAC_IRQHandler(void)
 {
-    // toggle the LED as a test
-    STATUS_LED_GPIO_Port->ODR ^= (1u << STATUS_LED_Pin);
+    // LED ON to time execution
+    // STATUS_LED_GPIO_Port->BSRR = (1u << STATUS_LED_Pin);
+
+    poll_gate_and_trigger_inputs();
+    tick_ADSRs();
+    update_MCP4822_DACs();
     
     // clear the Update Interrupt flag
     TIM6->SR &= ~TIM_SR_UIF;
+
+    // LED OFF to mark end of ISR
+    // STATUS_LED_GPIO_Port->BSRR = (0x10000u << STATUS_LED_Pin);
 }
 
 void TIM7_IRQHandler(void)
 {
-    // toggle the LED as a test
-    // STATUS_LED_GPIO_Port->ODR ^= (1u << STATUS_LED_Pin);
+    // LED ON to time execution
+    // STATUS_LED_GPIO_Port->BSRR = (1u << STATUS_LED_Pin);
+
+    poll_encoders();
+    poll_pushbuttons();
+    update_ADSR_inputs();
+    update_seven_segment_display();
+    update_bicolor_LEDs();
     
     // clear the Update Interrupt flag
     TIM7->SR &= ~TIM_SR_UIF;
+
+    // LED OFF to mark end of ISR
+    // STATUS_LED_GPIO_Port->BSRR = (0x10000u << STATUS_LED_Pin);
 }

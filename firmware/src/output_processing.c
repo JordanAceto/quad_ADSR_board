@@ -57,8 +57,8 @@ void update_bicolor_LEDs(void)
 void update_MCP4822_DACs(void)
 {
     // update the 12-bit MCP4822 SPI DACs with the upper 12 bits of the ADSRs
-    MCP4822_Write(SPI3_DAC1_CS_GPIO_Port, SPI3_DAC1_CS_Pin, MCP4822_CHANNEL_A, MCP4822_GAIN_1x, adsr[0].current_value >> 20);
-    MCP4822_Write(SPI3_DAC1_CS_GPIO_Port, SPI3_DAC1_CS_Pin, MCP4822_CHANNEL_B, MCP4822_GAIN_1x, adsr[1].current_value >> 20);
-    MCP4822_Write(SPI3_DAC2_CS_GPIO_Port, SPI3_DAC2_CS_Pin, MCP4822_CHANNEL_A, MCP4822_GAIN_1x, adsr[2].current_value >> 20);
-    MCP4822_Write(SPI3_DAC2_CS_GPIO_Port, SPI3_DAC2_CS_Pin, MCP4822_CHANNEL_B, MCP4822_GAIN_1x, adsr[3].current_value >> 20);
+    MCP4822_Write(SPI3_DAC1_CS_GPIO_Port, SPI3_DAC1_CS_Pin, MCP4822_CHANNEL_B, MCP4822_GAIN_1x, adsr[0].current_value >> 20);
+    MCP4822_Write(SPI3_DAC1_CS_GPIO_Port, SPI3_DAC1_CS_Pin, MCP4822_CHANNEL_A, MCP4822_GAIN_1x, adsr[1].current_value >> 20);
+    MCP4822_Write(SPI3_DAC2_CS_GPIO_Port, SPI3_DAC2_CS_Pin, MCP4822_CHANNEL_B, MCP4822_GAIN_1x, adsr[2].current_value >> 20);
+    MCP4822_Write(SPI3_DAC2_CS_GPIO_Port, SPI3_DAC2_CS_Pin, MCP4822_CHANNEL_A, MCP4822_GAIN_1x, adsr[3].current_value >> 20);
 }

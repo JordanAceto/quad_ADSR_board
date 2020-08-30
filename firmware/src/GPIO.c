@@ -252,29 +252,39 @@ void set_encoder_pins_to_alt_fcn_with_pullup(void)
 {
     // each pin in the MODER and PUPD registers takes up 2 bits
 
-    ENCODER_1_A_GPIO_Port->MODER |= (2u << (ENCODER_1_A_Pin < 1u));
-    ENCODER_1_A_GPIO_Port->PUPDR |= (1u << (ENCODER_1_A_Pin << 1u));
+    // See stm32f405 datasheet pg 62 for table of alt pin function mapping
 
-    ENCODER_1_B_GPIO_Port->MODER |= (2u << (ENCODER_1_B_Pin < 1u));
-    ENCODER_1_B_GPIO_Port->PUPDR |= (1u << (ENCODER_1_B_Pin << 1u));
+    ENCODER_1_A_GPIO_Port->MODER  |= (2u << (ENCODER_1_A_Pin << 1u));
+    ENCODER_1_A_GPIO_Port->PUPDR  |= (1u << (ENCODER_1_A_Pin << 1u));
+    ENCODER_1_A_GPIO_Port->AFR[0] |= GPIO_AFRL_AFRL0_0;
 
-    ENCODER_2_A_GPIO_Port->MODER |= (2u << (ENCODER_2_A_Pin < 1u));
-    ENCODER_2_A_GPIO_Port->PUPDR |= (1u << (ENCODER_2_A_Pin << 1u));
+    ENCODER_1_B_GPIO_Port->MODER  |= (2u << (ENCODER_1_B_Pin << 1u));
+    ENCODER_1_B_GPIO_Port->PUPDR  |= (1u << (ENCODER_1_B_Pin << 1u));
+    ENCODER_1_B_GPIO_Port->AFR[0] |= GPIO_AFRL_AFRL1_0;
 
-    ENCODER_2_B_GPIO_Port->MODER |= (2u << (ENCODER_2_B_Pin < 1u));
-    ENCODER_2_B_GPIO_Port->PUPDR |= (1u << (ENCODER_2_B_Pin << 1u));
+    ENCODER_2_A_GPIO_Port->MODER  |= (2u << (ENCODER_2_A_Pin << 1u));
+    ENCODER_2_A_GPIO_Port->PUPDR  |= (1u << (ENCODER_2_A_Pin << 1u));
+    ENCODER_2_A_GPIO_Port->AFR[0] |= (GPIO_AFRL_AFRL6_0 | GPIO_AFRL_AFRL6_1);
 
-    ENCODER_3_A_GPIO_Port->MODER |= (2u << (ENCODER_3_A_Pin < 1u));
-    ENCODER_3_A_GPIO_Port->PUPDR |= (1u << (ENCODER_3_A_Pin << 1u));
+    ENCODER_2_B_GPIO_Port->MODER  |= (2u << (ENCODER_2_B_Pin << 1u));
+    ENCODER_2_B_GPIO_Port->PUPDR  |= (1u << (ENCODER_2_B_Pin << 1u));
+    ENCODER_2_B_GPIO_Port->AFR[0] |= (GPIO_AFRL_AFRL7_0 | GPIO_AFRL_AFRL7_1);
 
-    ENCODER_3_B_GPIO_Port->MODER |= (2u << (ENCODER_3_B_Pin < 1u));
-    ENCODER_3_B_GPIO_Port->PUPDR |= (1u << (ENCODER_3_B_Pin << 1u));
+    ENCODER_3_A_GPIO_Port->MODER  |= (2u << (ENCODER_3_A_Pin << 1u));
+    ENCODER_3_A_GPIO_Port->PUPDR  |= (1u << (ENCODER_3_A_Pin << 1u));
+    ENCODER_3_A_GPIO_Port->AFR[1] |= GPIO_AFRH_AFRH0_0;
 
-    ENCODER_4_A_GPIO_Port->MODER |= (2u << (ENCODER_4_A_Pin < 1u));
-    ENCODER_4_A_GPIO_Port->PUPDR |= (1u << (ENCODER_4_A_Pin << 1u));
+    ENCODER_3_B_GPIO_Port->MODER  |= (2u << (ENCODER_3_B_Pin << 1u));
+    ENCODER_3_B_GPIO_Port->PUPDR  |= (1u << (ENCODER_3_B_Pin << 1u));
+    ENCODER_3_B_GPIO_Port->AFR[1] |= GPIO_AFRH_AFRH1_0;
 
-    ENCODER_4_B_GPIO_Port->MODER |= (2u << (ENCODER_4_B_Pin < 1u));
-    ENCODER_4_B_GPIO_Port->PUPDR |= (1u << (ENCODER_4_B_Pin << 1u));
+    ENCODER_4_A_GPIO_Port->MODER  |= (2u << (ENCODER_4_A_Pin << 1u));
+    ENCODER_4_A_GPIO_Port->PUPDR  |= (1u << (ENCODER_4_A_Pin << 1u));
+    ENCODER_4_A_GPIO_Port->AFR[0] |= GPIO_AFRL_AFRL6_1;
+
+    ENCODER_4_B_GPIO_Port->MODER  |= (2u << (ENCODER_4_B_Pin << 1u));
+    ENCODER_4_B_GPIO_Port->PUPDR  |= (1u << (ENCODER_4_B_Pin << 1u));
+    ENCODER_4_B_GPIO_Port->AFR[0] |= GPIO_AFRL_AFRL7_1;
 }
 
 void set_encoder_switches_to_input_pullup(void)

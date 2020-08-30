@@ -61,7 +61,7 @@ typedef enum ADSR_Mode_Type
 --| DESCRIPTION: the sample rate for the ADSRs, in Hertz
 --| TYPE: uint
 */
-#define ADSR_SAMPLE_RATE_Hz (10E3)
+#define ADSR_SAMPLE_RATE_Hz (5E3)
 
 /*
 --| NAME: CONTROL_SAMPLE_RATE_Hz
