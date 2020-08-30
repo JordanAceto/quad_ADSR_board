@@ -42,7 +42,7 @@
 --| DESCRIPTION: the bit pattern for adding the decimal point to a digit
 --| TYPE: uint
 */
-#define DECIMAL_POINT_BIT_PATTERN (1u << 2u)
+#define DECIMAL_POINT_BIT_PATTERN (1u << 5u)
 
 /*
 --|----------------------------------------------------------------------------|
@@ -68,16 +68,16 @@
 */
 static const uint8_t SEVEN_SEGMENT_NUMBERS[10]=
 {
-    0b11110011,
-    0b01010000,
-    0b11001011,
-    0b11011001,
-    0b01111000,
-    0b10111001,
-    0b10111011,
-    0b11010000,
-    0b11111011,
-    0b11111001
+    0b11001111,
+    0b00001010,
+    0b11010011,
+    0b10011011,
+    0b00011110,
+    0b10011101,
+    0b11011101,
+    0b00001011,
+    0b11011111,
+    0b10011111,
 };
 
 /*
@@ -193,7 +193,7 @@ void seven_segment_update_ADR_param(uint32_t ADR_param)
     SPI3_Transmit(SPI3_SEVEN_SEG_CS_GPIO_Port, SPI3_SEVEN_SEG_CS_Pin, bit_pattern_to_write);
 
     // illuminate the active digit
-    seven_segment_digit_en_port[illuminated_digit]->BSRR = (1u << seven_segment_digit_en_pin[illuminated_digit]);
+    seven_segment_digit_en_port[3u - illuminated_digit]->BSRR = (1u << seven_segment_digit_en_pin[3u - illuminated_digit]);
 
     // move the illuminated digit up one space
     illuminated_digit++;
@@ -235,7 +235,7 @@ void seven_segment_update_S_param(uint32_t S_param)
     // illuminate the active digit, but do not illuminate more than one leading zero
     if (illuminated_digit < 2 || illuminated_digit < log_10_of_param)
     {
-        seven_segment_digit_en_port[illuminated_digit]->BSRR = (1u << seven_segment_digit_en_pin[illuminated_digit]);
+        seven_segment_digit_en_port[3u - illuminated_digit]->BSRR = (1u << seven_segment_digit_en_pin[3u - illuminated_digit]);
     }
 
     // move the illuminated digit up one space
