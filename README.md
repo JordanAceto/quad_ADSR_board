@@ -17,4 +17,16 @@ Additionally, the ADSRs can all be forced to lock to a "master" ADSR, so that th
 
 A bank of four bi-color LEDs shows the active ADSR, and whether it is in independent, or lock-to-master mode.
 
-More to come.
+# First rev build evaluation:
+- Most of the systems work.
+- The EEPROM has not been physically installed and EEPROM code has not been written yet.
+- In the code, when switching from lock-to-master mode back to independent mode: the ADSRs should go back to the settings they held before entering lock-to-master mode. Write a function called `release_ADSRs_from_master_mode` or something that accomplishes this, and call that function when leaving lock-to-master mode.
+- The encoders should be no-detent types. I used encoders with detents and I don't like it.
+- I tried and failed to setup encoder trigger filtering, please investigate using the timer register filters when the timers are in encoder mode. I'd like to be able to apply filtering to the encoders. They work fine and don't misfire now, but it would be nice to easily tailor how "fast" they update by addign in some filtering.
+- The heights of the panel mount components is an issue: the 3.5mm jacks are taller than the encoders and the seven-segment display. I got everything to work by lifting the encoders and 7-seg up off the pcb before soldering, but this is lame. I think the solution is split the pcb into a main pcb and a jack pcb, and connect the two pcbs with wires. Another solution could be to create a "lifter" pcb that acts as a spacer between the main pcb and the encoders/7-seg, but this seems kind of yucky too. Think about this for a while before doing a new pcb rev.
+- I'm having issues with getting the PLL to work for arbitrary frequencies: with some settings of M, N, and P the output frequency is not as expected. Please investigate this and figure out what I'm doing wrong.
+- I used two MCP4822 DACs, but I probably could have used the 2 internal DAC channels for 2 of the ADSRs and only installed one MCP4822. Investigate if using the internal DAC for 2 channels creates any pinout conflicts, or any other kind of conflicts, for the next board revision, to try and save a DAC.
+- The ADSR outputs are low: I want 10v peak ADSRs and I calculated the opamp gain resistors assuming the DACs output 3.3v peaks, but they don't. Please recalculate the gain resistors for the actual MCP4822 output with a gain of 1x. Take into account the internal DACs if you apply the suggestion above.
+- Many parts of the codebase could be optimized and improved. In particular, the ADSR code does some costly 64-bit divisions in a couple of spots. See if you can't improve this. View the `main.list` output file occasionally.
+- Compiler optimization is turned off right now. Turn this up to `-Os` or `-O2` and make sure that nothing breaks. There might be some volatile issues, or necessary code that gets optimized away, be careful and thorough!
+- Otherwise the project is in pretty good shape! The prototype I built could definitely go in a rack and work with other modules.
