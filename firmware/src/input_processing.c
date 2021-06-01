@@ -82,21 +82,27 @@ void lock_encoders_to_active_adsr(void)
 
 void update_ADSR_inputs(void)
 {
+    // collect the current A, D, S, and R settings
+    const uint32_t A = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]);
+    const uint32_t D = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec]);
+    const uint32_t S = encoder_count_to_S_param(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]);
+    const uint32_t R = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]);
+
     if (adsr_mode == ADSR_MODE_INDEPENDENT) // only update the active ADSR
     {
-        adsr[active_adsr].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]);
-        adsr[active_adsr].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec]);
-        adsr[active_adsr].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = encoder_count_to_S_param(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]);
-        adsr[active_adsr].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]);
+        adsr[active_adsr].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]           = A;
+        adsr[active_adsr].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec]            = D;
+        adsr[active_adsr].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = S;
+        adsr[active_adsr].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]          = R;
     }
     else // it is lock-to-master mode, so update the inputs to all the ADSRs
     {
         for (int i = 0; i < NUM_ADSRs; ++i)
         {
-            adsr[i].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]);
-            adsr[i].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec]);
-            adsr[i].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = encoder_count_to_S_param(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]);
-            adsr[i].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec] = encoder_count_to_ADR_param(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]);
+            adsr[i].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]           = A;
+            adsr[i].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec]            = D;
+            adsr[i].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = S;
+            adsr[i].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]          = R;
         }
     }
 }
