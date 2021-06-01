@@ -52,7 +52,7 @@ void poll_pushbuttons(void)
         {
             active_adsr = i;
             adsr_mode = ADSR_MODE_INDEPENDENT;
-            lock_encoders_to_active_adsr();
+            set_encoders_to_active_adsr_values();
         }
 
         // doing a long press selects the active adsr and enters lock-to-master mode
@@ -60,18 +60,24 @@ void poll_pushbuttons(void)
         {
             active_adsr = i;
             adsr_mode = ADSR_MODE_LOCK_TO_MASTER;
-            lock_encoders_to_active_adsr();
+            set_encoders_to_active_adsr_values();
         }
     }
 }
 
-void lock_encoders_to_active_adsr(void)
+void set_encoders_to_active_adsr_values(void)
 {
+    // collect the A, D, S, and R values of the active ADSR
+    const uint32_t A = adsr[active_adsr].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec];
+    const uint32_t D = adsr[active_adsr].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec];
+    const uint32_t S = adsr[active_adsr].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10];
+    const uint32_t R = adsr[active_adsr].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec];
+
     // set the timer CNT registers to the active adsr settings
-    ADR_param_to_encoder_count(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec], adsr[active_adsr].input[ADSR_INPUT_TYPE_ATTACK_TIME_mSec]);
-    ADR_param_to_encoder_count(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec], adsr[active_adsr].input[ADSR_INPUT_TYPE_DECAY_TIME_mSec]);
-    S_param_to_encoder_count(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10], adsr[active_adsr].input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]);
-    ADR_param_to_encoder_count(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec], adsr[active_adsr].input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]);
+    ADR_param_to_encoder_count(p_encoder[ADSR_INPUT_TYPE_ATTACK_TIME_mSec],         A);
+    ADR_param_to_encoder_count(p_encoder[ADSR_INPUT_TYPE_DECAY_TIME_mSec],          D);
+    S_param_to_encoder_count(p_encoder[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10], S);
+    ADR_param_to_encoder_count(p_encoder[ADSR_INPUT_TYPE_RELEASE_TIME_mSec],        R);
 
     // load the saved encoder settings from the encoder values
     for (int i = 0; i < NUM_ADSR_INPUT_TYPES; ++i)

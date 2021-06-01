@@ -91,7 +91,7 @@ void SystemInit(void)
         Initialize_ADSR(&adsr[i], ADSR_SAMPLE_RATE_Hz);
     }
 
-    lock_encoders_to_active_adsr();
+    set_encoders_to_active_adsr_values();
     
     __enable_irq();
 }
