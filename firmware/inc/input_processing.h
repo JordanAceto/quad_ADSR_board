@@ -61,25 +61,6 @@ void poll_pushbuttons(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
-    set_encoders_to_active_adsr_values
-
-Function Description:
-    Set the encoders to the values held by active ADSR and update the cached
-    encoder settings.
-
-Parameters:
-    None
-
-Returns:
-    None.
-
-Assumptions/Limitations:
-    Assumes that all initialization is complete.
-------------------------------------------------------------------------------*/
-void set_encoders_to_active_adsr_values(void);
-
-/*------------------------------------------------------------------------------
-Function Name:
     update_ADSR_inputs
 
 Function Description:
