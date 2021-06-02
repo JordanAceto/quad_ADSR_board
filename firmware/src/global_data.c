@@ -214,6 +214,40 @@ uint16_t cached_encoder_reading[NUM_ADSR_INPUT_TYPES] =
 };
 
 /*
+--| NAME: cached_ADSR_setting
+*/
+uint32_t cached_ADSR_setting[NUM_ADSRs][NUM_ADSR_INPUT_TYPES] =
+{
+    {
+        ADSR_DEFAULT_ATTACK_TIME_mSec,
+        ADSR_DEFAULT_DECAY_TIME_mSec,
+        ADSR_DEFAULT_SUSTAIN_LEVEL_percent_x_10,
+        ADSR_DEFAULT_RELEASE_TIME_mSec
+    },
+
+    {
+        ADSR_DEFAULT_ATTACK_TIME_mSec,
+        ADSR_DEFAULT_DECAY_TIME_mSec,
+        ADSR_DEFAULT_SUSTAIN_LEVEL_percent_x_10,
+        ADSR_DEFAULT_RELEASE_TIME_mSec
+    },
+
+    {
+        ADSR_DEFAULT_ATTACK_TIME_mSec,
+        ADSR_DEFAULT_DECAY_TIME_mSec,
+        ADSR_DEFAULT_SUSTAIN_LEVEL_percent_x_10,
+        ADSR_DEFAULT_RELEASE_TIME_mSec
+    },
+
+    {
+        ADSR_DEFAULT_ATTACK_TIME_mSec,
+        ADSR_DEFAULT_DECAY_TIME_mSec,
+        ADSR_DEFAULT_SUSTAIN_LEVEL_percent_x_10,
+        ADSR_DEFAULT_RELEASE_TIME_mSec
+    }
+};
+
+/*
 --| NAME: active_encoder
 */
 ADSR_input_t active_encoder = ADSR_INPUT_TYPE_ATTACK_TIME_mSec;

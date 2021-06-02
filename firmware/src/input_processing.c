@@ -23,6 +23,48 @@
 
 /*
 --|----------------------------------------------------------------------------|
+--| PRIVATE HELPER FUNCTION PROTOTYPES
+--|----------------------------------------------------------------------------|
+*/
+
+/*------------------------------------------------------------------------------
+Function Name:
+    cache_ADSR_settings
+
+Function Description:
+    Cache the current ADSR settings.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    None
+------------------------------------------------------------------------------*/
+static void cache_ADSR_settings(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
+    restore_cached_ADSR_settings
+
+Function Description:
+    Restore the ADSRs to the cached settings.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    None
+------------------------------------------------------------------------------*/
+static void restore_cached_ADSR_settings(void);
+
+/*
+--|----------------------------------------------------------------------------|
 --| PUBLIC FUNCTION DEFINITIONS
 --|----------------------------------------------------------------------------|
 */
@@ -31,11 +73,13 @@ void poll_encoders(void)
 {
     for (int i = 0; i < NUM_ADSR_INPUT_TYPES; ++i)
     {
-        // if you adjusted an encoder, make that one the active encoder
+        // if you adjusted an encoder, make that one the active encoder and cache the settings
         if (cached_encoder_reading[i] != p_encoder[i]->CNT)
         {
             active_encoder = i;
             cached_encoder_reading[i] = p_encoder[i]->CNT;
+
+            return;
         }
     }
 }
@@ -50,17 +94,31 @@ void poll_pushbuttons(void)
         // clicking a button selects the active adsr and enters independent mode
         if (pushbutton[i].state == DISCRETE_INPUT_STATE_RISING_EDGE)
         {
+            // restore the settings if you just came out of lock-to-master mode
+            if (adsr_mode == ADSR_MODE_LOCK_TO_MASTER)
+            {
+                restore_cached_ADSR_settings();
+            }
+
             active_adsr = i;
             adsr_mode = ADSR_MODE_INDEPENDENT;
             set_encoders_to_active_adsr_values();
+
+            return;
         }
 
         // doing a long press selects the active adsr and enters lock-to-master mode
-        if (pushbutton[i].state == DISCRETE_INPUT_STATE_LONG_HIGH)
+        if (adsr_mode != ADSR_MODE_LOCK_TO_MASTER && pushbutton[i].state == DISCRETE_INPUT_STATE_LONG_HIGH)
         {
+            // save all the A, D, S, R settings for the four ADSRs so that
+            // when you go back to independent mode you can restore the settings
+            cache_ADSR_settings();
+
             active_adsr = i;
             adsr_mode = ADSR_MODE_LOCK_TO_MASTER;
             set_encoders_to_active_adsr_values();
+
+            return;
         }
     }
 }
@@ -131,6 +189,34 @@ void poll_gate_and_trigger_inputs(void)
         if (gate_input[i].state == DISCRETE_INPUT_STATE_FALLING_EDGE)
         {
             ADSR_Gate_Off_Event(&adsr[i]);
+        }
+    }
+}
+
+/*
+--|----------------------------------------------------------------------------|
+--| PRIVATE HELPER FUNCTION DEFINITIONS
+--|----------------------------------------------------------------------------|
+*/
+
+static void cache_ADSR_settings(void)
+{
+    for (int i = 0; i < NUM_ADSRs; i++)
+    {
+        for (int j = 0; j < NUM_ADSR_INPUT_TYPES; j++)
+        {
+            cached_ADSR_setting[i][j] = adsr[i].input[j];
+        }
+    }
+}
+
+static void restore_cached_ADSR_settings(void)
+{
+    for (int i = 0; i < NUM_ADSRs; i++)
+    {
+        for (int j = 0; j < NUM_ADSR_INPUT_TYPES; j++)
+        {
+            adsr[i].input[j] = cached_ADSR_setting[i][j];
         }
     }
 }

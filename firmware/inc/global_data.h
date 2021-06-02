@@ -169,6 +169,13 @@ Discrete_Input_t pushbutton[NUM_ADSR_INPUT_TYPES];
 uint16_t cached_encoder_reading[NUM_ADSR_INPUT_TYPES];
 
 /*
+--| NAME: cached_ADSR_setting
+--| DESCRIPTION: cached ADSR settings, used when going back and forth from independent/lock-to-master modes
+--| TYPE: uint32_t
+*/
+uint32_t cached_ADSR_setting[NUM_ADSRs][NUM_ADSR_INPUT_TYPES];
+
+/*
 --| NAME: active_encoder
 --| DESCRIPTION: represents the encoder which was last adjusted by the user
 --| TYPE: ADSR_input_t
