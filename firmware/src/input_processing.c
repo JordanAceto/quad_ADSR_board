@@ -98,6 +98,15 @@ void poll_encoders(void)
             active_encoder = i;
             cached_encoder_reading[i] = p_encoder[i]->CNT;
 
+            if (i == ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10)
+            {
+                cached_ADSR_setting[active_adsr][i] = encoder_count_to_S_param(p_encoder[i]);
+            }
+            else
+            {
+                cached_ADSR_setting[active_adsr][i] = encoder_count_to_ADR_param(p_encoder[i]);
+            }
+
             return;
         }
     }
@@ -129,10 +138,6 @@ void poll_pushbuttons(void)
         // doing a long press selects the active adsr and enters lock-to-master mode
         if (adsr_mode != ADSR_MODE_LOCK_TO_MASTER && pushbutton[i].state == DISCRETE_INPUT_STATE_LONG_HIGH)
         {
-            // save all the A, D, S, R settings for the four ADSRs so that
-            // when you go back to independent mode you can restore the settings
-            cache_ADSR_settings();
-
             active_adsr = i;
             adsr_mode = ADSR_MODE_LOCK_TO_MASTER;
             set_encoders_to_active_adsr_values();
