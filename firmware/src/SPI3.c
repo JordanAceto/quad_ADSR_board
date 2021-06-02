@@ -52,6 +52,8 @@ void SPI3_Init(void)
 
 void SPI3_Transmit(GPIO_TypeDef * CS_port, uint16_t CS_pin, uint32_t value)
 {
+    __disable_irq();
+
     // set the chip select pin low
     CS_port->BSRR = (0x10000u << CS_pin);
 
@@ -70,4 +72,6 @@ void SPI3_Transmit(GPIO_TypeDef * CS_port, uint16_t CS_pin, uint32_t value)
 
     // set the chip select pin back high
     CS_port->BSRR = (1u << CS_pin);
+
+    __enable_irq();
 }
