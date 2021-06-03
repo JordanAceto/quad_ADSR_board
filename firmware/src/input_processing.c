@@ -29,24 +29,6 @@
 
 /*------------------------------------------------------------------------------
 Function Name:
-    cache_ADSR_settings
-
-Function Description:
-    Cache the current ADSR settings.
-
-Parameters:
-    None
-
-Returns:
-    None
-
-Assumptions/Limitations:
-    None
-------------------------------------------------------------------------------*/
-static void cache_ADSR_settings(void);
-
-/*------------------------------------------------------------------------------
-Function Name:
     restore_cached_ADSR_settings
 
 Function Description:
@@ -201,17 +183,6 @@ void poll_gate_and_trigger_inputs(void)
 --| PRIVATE HELPER FUNCTION DEFINITIONS
 --|----------------------------------------------------------------------------|
 */
-
-static void cache_ADSR_settings(void)
-{
-    for (int i = 0; i < NUM_ADSRs; i++)
-    {
-        for (int j = 0; j < NUM_ADSR_INPUT_TYPES; j++)
-        {
-            cached_ADSR_setting[i][j] = adsr[i].input[j];
-        }
-    }
-}
 
 static void restore_cached_ADSR_settings(void)
 {
