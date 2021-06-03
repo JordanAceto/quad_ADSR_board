@@ -45,25 +45,6 @@ Assumptions/Limitations:
 ------------------------------------------------------------------------------*/
 static void restore_cached_ADSR_settings(void);
 
-/*------------------------------------------------------------------------------
-Function Name:
-    set_encoders_to_active_adsr_values
-
-Function Description:
-    Set the encoders to the values held by active ADSR and update the cached
-    encoder settings.
-
-Parameters:
-    None
-
-Returns:
-    None.
-
-Assumptions/Limitations:
-    Assumes that all initialization is complete.
-------------------------------------------------------------------------------*/
-void set_encoders_to_active_adsr_values(void);
-
 /*
 --|----------------------------------------------------------------------------|
 --| PUBLIC FUNCTION DEFINITIONS
@@ -178,23 +159,6 @@ void poll_gate_and_trigger_inputs(void)
     }
 }
 
-/*
---|----------------------------------------------------------------------------|
---| PRIVATE HELPER FUNCTION DEFINITIONS
---|----------------------------------------------------------------------------|
-*/
-
-static void restore_cached_ADSR_settings(void)
-{
-    for (int i = 0; i < NUM_ADSRs; i++)
-    {
-        for (int j = 0; j < NUM_ADSR_INPUT_TYPES; j++)
-        {
-            adsr[i].input[j] = cached_ADSR_setting[i][j];
-        }
-    }
-}
-
 void set_encoders_to_active_adsr_values(void)
 {
     // collect the A, D, S, and R values of the active ADSR
@@ -213,5 +177,22 @@ void set_encoders_to_active_adsr_values(void)
     for (int i = 0; i < NUM_ADSR_INPUT_TYPES; ++i)
     {
         cached_encoder_reading[i] = p_encoder[i]->CNT;
+    }
+}
+
+/*
+--|----------------------------------------------------------------------------|
+--| PRIVATE HELPER FUNCTION DEFINITIONS
+--|----------------------------------------------------------------------------|
+*/
+
+static void restore_cached_ADSR_settings(void)
+{
+    for (int i = 0; i < NUM_ADSRs; i++)
+    {
+        for (int j = 0; j < NUM_ADSR_INPUT_TYPES; j++)
+        {
+            adsr[i].input[j] = cached_ADSR_setting[i][j];
+        }
     }
 }
