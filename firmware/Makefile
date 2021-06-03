@@ -77,6 +77,7 @@ $(BIN_DIR)$(TARGET).bin: $(BIN_DIR)$(TARGET).elf
 	$(OBJECT_COPY) $(OBJ_COPY_FLAGS) $< $@
 	$(OBJECT_DUMP) -D $(BIN_DIR)$(TARGET).elf > $(BIN_DIR)$(TARGET).list
 	$(OBJECT_SIZE) $<
+	@./utils/get_fw_size.sh $< 0xfa000 0x1f400
 
 write: $(BIN_DIR)$(TARGET).bin
 	st-flash --reset write $(BIN_DIR)$(TARGET).bin 0x08000000
