@@ -38,7 +38,7 @@
 --| DESCRIPTION: the number of index bits the phase accumulator.
 --| TYPE: uint32_t
 */
-#define NUM_INDEX_BITS_IN_ACCUMULATOR (8u)
+#define NUM_INDEX_BITS_IN_ACCUMULATOR (10u)
 
 /*
 --| NAME: NUM_FRACTIONAL_BITS_IN_ACCUMULATOR

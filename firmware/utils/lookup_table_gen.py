@@ -28,7 +28,7 @@ PLOT_CURVES = True if ('-p' in sys.argv) else False
 plt.rcParams['figure.figsize'] = (8.0, 6.0)
 
 # the lookup table size, must match the ADSR_LOOK_UP_TABLE_TABLE_SIZE definition in adsr.c
-LUT_SIZE = 256
+LUT_SIZE = 2**10
 
 # the maximum value for the LUTs
 MAX_VALUE = 2**32 - 1

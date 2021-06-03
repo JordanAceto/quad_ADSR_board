@@ -6,9 +6,9 @@
 #include <stdint.h>
 
 // the attack curve lookup table
-extern const uint32_t ADSR_ATTACK_TABLE[256];
+extern const uint32_t ADSR_ATTACK_TABLE[1024];
 
 // the decay curve lookup table, used for decay and release curves
-extern const uint32_t ADSR_DECAY_TABLE[256];
+extern const uint32_t ADSR_DECAY_TABLE[1024];
 
 #endif
