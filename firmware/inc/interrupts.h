@@ -15,6 +15,32 @@
 
 /*
 --|----------------------------------------------------------------------------|
+--| INCLUDE FILES
+--|----------------------------------------------------------------------------|
+*/
+
+#include <stdbool.h>
+
+/*
+--|----------------------------------------------------------------------------|
+--| PUBLIC TYPES
+--|----------------------------------------------------------------------------|
+*/
+
+/*
+--| NAME: Interrupt_Flag_t
+--| DESCRIPTION: Enumeration of the interrupt flags used by the system
+*/
+typedef enum Interrupt_Flag_Type
+{
+    INTERRUPT_FLAG_TIM6 = 0u,
+    INTERRUPT_FLAG_TIM7,
+    
+    NUM_INTERRUPT_FLAG_TYPES
+} Interrupt_Flag_t;
+
+/*
+--|----------------------------------------------------------------------------|
 --| PUBLIC FUNCTION PROTOTYPES
 --|----------------------------------------------------------------------------|
 */
@@ -39,38 +65,56 @@ void interrupts_Init(void);
 
 /*------------------------------------------------------------------------------
 Function Name:
-    TIM6_DAC_IRQHandler
+    interrupt_get_flag
 
 Function Description:
-    IRQ handler for the TIM6 interrupt.
+    Get the status of the specified interrupt flag.
 
 Parameters:
-    None
+    flag: the flag to check
 
 Returns:
     None
 
 Assumptions/Limitations:
-    Called automatically, do not call this function.
+    Assumed that the flag is a member of the Interrupt_Flag_t enumeration.
 ------------------------------------------------------------------------------*/
-void TIM6_DAC_IRQHandler(void);
+bool interrupt_get_flag(Interrupt_Flag_t flag);
 
 /*------------------------------------------------------------------------------
 Function Name:
-    TIM7_IRQHandler
+    interrupt_set_flag
 
 Function Description:
-    IRQ handler for the TIM7 interrupt.
+    Set the specified interrupt flag.
 
 Parameters:
-    None
+    flag: the flag to set
 
 Returns:
     None
 
 Assumptions/Limitations:
-    Called automatically, do not call this function.
+    Assumed that the flag is a member of the Interrupt_Flag_t enumeration.
 ------------------------------------------------------------------------------*/
-void TIM7_IRQHandler(void);
+void interrupt_set_flag(Interrupt_Flag_t flag);
+
+/*------------------------------------------------------------------------------
+Function Name:
+    interrupt_clear_flag
+
+Function Description:
+    Clear the specified interrupt flag.
+
+Parameters:
+    flag: the flag to clear
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    Assumed that the flag is a member of the Interrupt_Flag_t enumeration.
+------------------------------------------------------------------------------*/
+void interrupt_clear_flag(Interrupt_Flag_t flag);
 
 #endif

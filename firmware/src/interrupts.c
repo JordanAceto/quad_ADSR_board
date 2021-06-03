@@ -17,9 +17,7 @@
 --|----------------------------------------------------------------------------|
 */
 
-#include "GPIO.h"
-#include "input_processing.h"
-#include "output_processing.h"
+#include "interrupts.h"
 #include "stm32f4xx.h"
 
 /*
@@ -44,6 +42,60 @@
 */
 #define TIM7_IRQ_PRIORITY (1)
 
+/*
+--|----------------------------------------------------------------------------|
+--| PRIVATE VARIABLES
+--|----------------------------------------------------------------------------|
+*/
+
+/*
+--| NAME: flags
+--| DESCRIPTION: the interrupt flags used by the system
+--| TYPE: bool
+*/
+static bool flags[NUM_INTERRUPT_FLAG_TYPES];
+
+/*
+--|----------------------------------------------------------------------------|
+--| PRIVATE HELPER FUNCTION PROTOTYPES
+--|----------------------------------------------------------------------------|
+*/
+
+/*------------------------------------------------------------------------------
+Function Name:
+    TIM6_DAC_IRQHandler
+
+Function Description:
+    IRQ handler for the TIM6 interrupt.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    Called automatically, do not call this function.
+------------------------------------------------------------------------------*/
+void TIM6_DAC_IRQHandler(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
+    TIM7_IRQHandler
+
+Function Description:
+    IRQ handler for the TIM7 interrupt.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    Called automatically, do not call this function.
+------------------------------------------------------------------------------*/
+void TIM7_IRQHandler(void);
 
 /*
 --|----------------------------------------------------------------------------|
@@ -62,36 +114,39 @@ void interrupts_Init(void)
     NVIC_EnableIRQ(TIM7_IRQn);
 }
 
+bool interrupt_get_flag(Interrupt_Flag_t flag)
+{
+    return flags[flag];
+}
+
+void interrupt_set_flag(Interrupt_Flag_t flag)
+{
+    flags[flag] = true;
+}
+
+void interrupt_clear_flag(Interrupt_Flag_t flag)
+{
+    flags[flag] = false;
+}
+
+/*
+--|----------------------------------------------------------------------------|
+--| PRIVATE HELPER FUNCTION DEFINITIONS
+--|----------------------------------------------------------------------------|
+*/
+
 void TIM6_DAC_IRQHandler(void)
 {
-    // LED ON to time execution
-    // STATUS_LED_GPIO_Port->BSRR = (1u << STATUS_LED_Pin);
+    interrupt_set_flag(INTERRUPT_FLAG_TIM6);
 
-    poll_gate_and_trigger_inputs();
-    tick_ADSRs();
-    update_MCP4822_DACs();
-    
     // clear the Update Interrupt flag
     TIM6->SR &= ~TIM_SR_UIF;
-
-    // LED OFF to mark end of ISR
-    // STATUS_LED_GPIO_Port->BSRR = (0x10000u << STATUS_LED_Pin);
 }
 
 void TIM7_IRQHandler(void)
 {
-    // LED ON to time execution
-    // STATUS_LED_GPIO_Port->BSRR = (1u << STATUS_LED_Pin);
-
-    poll_encoders();
-    poll_pushbuttons();
-    update_ADSR_inputs();
-    update_seven_segment_display();
-    update_bicolor_LEDs();
+    interrupt_set_flag(INTERRUPT_FLAG_TIM7);
     
     // clear the Update Interrupt flag
     TIM7->SR &= ~TIM_SR_UIF;
-
-    // LED OFF to mark end of ISR
-    // STATUS_LED_GPIO_Port->BSRR = (0x10000u << STATUS_LED_Pin);
 }
