@@ -22,7 +22,7 @@ CMSIS_INC_DIR = ./CMSIS/Include/
 BIN_DIR       = ./bin/
 
 OPTIONS += $(MCU)
-OPTIONS += -O0
+OPTIONS += -Os
 OPTIONS += --specs=nosys.specs
 OPTIONS += -nostdlib
 OPTIONS += -fno-exceptions
