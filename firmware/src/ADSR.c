@@ -313,7 +313,7 @@ void Handle_State_Transitions(ADSR_t * p_ADSR)
         switch (p_ADSR->state)
         {
         case ADSR_STATE_TYPE_AT_REST:
-            p_ADSR->state = ADSR_STATE_TYPE_ATTACK;
+            // at-rest state only changes after a gate-on message
             break;
 
         case ADSR_STATE_TYPE_ATTACK:
@@ -325,7 +325,7 @@ void Handle_State_Transitions(ADSR_t * p_ADSR)
             break;
 
         case ADSR_STATE_TYPE_SUSTAIN:
-            p_ADSR->state = ADSR_STATE_TYPE_RELEASE;
+            // sustain state only changes after a gate-off message
             break;
 
         case ADSR_STATE_TYPE_RELEASE:
