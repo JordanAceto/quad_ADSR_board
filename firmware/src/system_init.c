@@ -84,8 +84,6 @@ void SystemInit(void)
     encoders_Init();
     interrupts_Init();
 
-    ADSR_Initialize_Look_Up_Tables();
-    
     for (int i = 0; i < NUM_ADSRs; ++i)
     {
         Initialize_ADSR(&adsr[i], ADSR_SAMPLE_RATE_Hz);

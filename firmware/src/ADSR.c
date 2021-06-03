@@ -18,6 +18,7 @@
 */
 
 #include "ADSR.h"
+#include "lookup_tables.h"
 
 /*
 --|----------------------------------------------------------------------------|
@@ -80,26 +81,6 @@
 --| TYPE: uint32_t
 */
 #define SUSTAIN_SCALER (MAX_ADSR_VALUE / ADSR_MAX_SUSTAIN_LEVEL_percent_x_10)
-
-/*
---|----------------------------------------------------------------------------|
---| PRIVATE VARIABLES
---|----------------------------------------------------------------------------|
-*/
-
-/*
---| NAME: ADSR_ATTACK_TABLE
---| DESCRIPTION: The attack LUT is used to store the attack curve.
---| TYPE: uint32_t
-*/
-static uint32_t ADSR_ATTACK_TABLE[ADSR_LOOK_UP_TABLE_TABLE_SIZE];
-
-/*
---| NAME: ADSR_DECAY_TABLE
---| DESCRIPTION: The decay LUT is used to store the decay/release curve.
---| TYPE: uint32_t
-*/
-static uint32_t ADSR_DECAY_TABLE[ADSR_LOOK_UP_TABLE_TABLE_SIZE];
 
 /*
 --|----------------------------------------------------------------------------|
@@ -218,62 +199,6 @@ static uint32_t Linear_Interpolation(uint32_t y1, uint32_t y2, uint32_t fraction
 --| PUBLIC FUNCTION DEFINITIONS
 --|----------------------------------------------------------------------------|
 */
-
-void ADSR_Initialize_Look_Up_Tables(void)
-{
-    /* fill the attack table */
-
-    /*
-    this is the "magic" target to form a truncated rising RC curve for the
-    attack curve, it is 1.3 * full scale. This mimics analog ADSRs which
-    target a voltage of 1.3x the peak voltage for the attack stage. It makes
-    the attack curve somewhat steeper than the decay curve.
-    */
-    uint64_t target = 5583457485u;
-
-    // this was arrived at empirically, it is 0.0057 * full scale
-    uint64_t squish_factor = 24481314u;
-
-    ADSR_ATTACK_TABLE[0u] = 0u;
-
-    for (int i = 1; i < ADSR_LOOK_UP_TABLE_TABLE_SIZE; i++)
-    {
-        const uint64_t last_val = (uint64_t)ADSR_ATTACK_TABLE[i - 1] ;
-
-        const uint64_t amt_above_last_val = ((target - last_val) * squish_factor) / MAX_ADSR_VALUE;
-
-        const uint64_t current_val = last_val + amt_above_last_val;
-
-        ADSR_ATTACK_TABLE[i] = current_val;
-    }
-
-    /* fill the decay table */
-
-    // for the decay table, the target is just full scale, to get a normal rc curve
-    target = MAX_ADSR_VALUE;
-
-    // this was arrived at empirically, it is 0.03 * full scale
-    squish_factor = 128849018u;
-
-    ADSR_DECAY_TABLE[0u] = 0u;
-
-    for (int i = 1; i < ADSR_LOOK_UP_TABLE_TABLE_SIZE; i++)
-    {
-        const uint64_t last_val = (uint64_t)ADSR_DECAY_TABLE[i - 1] ;
-
-        const uint64_t amt_above_last_val = ((target - last_val) * squish_factor) / MAX_ADSR_VALUE;
-
-        const uint64_t current_val = last_val + amt_above_last_val;
-
-        ADSR_DECAY_TABLE[i] = current_val;
-    }
-
-    // decay values are calculated inverted, flip them upside down so that they are correct
-    for (int i = 0; i < ADSR_LOOK_UP_TABLE_TABLE_SIZE; i++)
-    {
-        ADSR_DECAY_TABLE[i] = MAX_ADSR_VALUE - ADSR_DECAY_TABLE[i];
-    }
-}
 
 void Initialize_ADSR(ADSR_t * p_ADSR, uint32_t sample_rate)
 {
@@ -458,14 +383,20 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
     uint32_t y1;
     uint32_t y2;
 
+    // the current LUT index
     const uint32_t LUT_index = p_ADSR->phase_accumulator >> NUM_FRACTIONAL_BITS_IN_ACCUMULATOR;
+
+    // the next LUT index for interpolation, clamps at the max index to avoid bad behavior
+    const uint32_t next_idx = (LUT_index + 1u) < ADSR_LOOK_UP_TABLE_TABLE_SIZE ? LUT_index + 1u : ADSR_LOOK_UP_TABLE_TABLE_SIZE - 1u;
+
+    // the fractional part of the phase accumulator
     const uint32_t accumulator_fraction = p_ADSR->phase_accumulator & ACCUMULATOR_FRACTION_MASK;
 
     switch (p_ADSR->state)
     {
     case ADSR_STATE_TYPE_ATTACK:
         y1 = ADSR_ATTACK_TABLE[LUT_index];
-        y2 = ADSR_ATTACK_TABLE[(LUT_index + 1u) % ADSR_LOOK_UP_TABLE_TABLE_SIZE];
+        y2 = ADSR_ATTACK_TABLE[next_idx];
         
         coefficient = MAX_ADSR_VALUE - p_ADSR->value_when_gate_on_recieved;
         sample      = Linear_Interpolation(y1, y2, accumulator_fraction);
@@ -474,7 +405,7 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
 
     case ADSR_STATE_TYPE_DECAY:
         y1 = ADSR_DECAY_TABLE[LUT_index];
-        y2 = ADSR_DECAY_TABLE[(LUT_index + 1u) % ADSR_LOOK_UP_TABLE_TABLE_SIZE];
+        y2 = ADSR_DECAY_TABLE[next_idx];
 
         coefficient = MAX_ADSR_VALUE - (p_ADSR->input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] * SUSTAIN_SCALER);
         sample      = Linear_Interpolation(y1, y2, accumulator_fraction);
@@ -489,7 +420,7 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
 
     case ADSR_STATE_TYPE_RELEASE:
         y1 = ADSR_DECAY_TABLE[LUT_index];
-        y2 = ADSR_DECAY_TABLE[(LUT_index + 1u) % ADSR_LOOK_UP_TABLE_TABLE_SIZE];
+        y2 = ADSR_DECAY_TABLE[next_idx];
 
         coefficient = p_ADSR->value_when_gate_off_recieved;
         sample      = Linear_Interpolation(y1, y2, accumulator_fraction);
