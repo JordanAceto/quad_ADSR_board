@@ -17,8 +17,6 @@
 --|----------------------------------------------------------------------------|
 */
 
-#include "ADSR.h"
-#include "Discrete_Input.h"
 #include "global_data.h"
 #include "GPIO.h"
 #include "stm32f4xx.h"
