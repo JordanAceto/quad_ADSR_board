@@ -2,7 +2,7 @@
 DEFAULT_TARGET = main
 TARGET = $(DEFAULT_TARGET)
 
-LD_SCRIPT = STM32F405RGTx_FLASH.ld
+LD_SCRIPT = $(THIRD_PARTY)STM32F405RGTx_FLASH.ld
 
 CPU = -mcpu=cortex-m4
 FPU = -mfpu=fpv4-sp-d16
@@ -17,8 +17,9 @@ OBJECT_SIZE  = $(TOOLCHAIN)-size
 
 SRC_DIR       = ./src/
 INC_DIR       = ./inc/
-CMSIS_DEV_DIR = ./CMSIS/Device/
-CMSIS_INC_DIR = ./CMSIS/Include/
+THIRD_PARTY   = ./third_party/
+CMSIS_DEV_DIR = $(THIRD_PARTY)CMSIS/Device/
+CMSIS_INC_DIR = $(THIRD_PARTY)CMSIS/Include/
 BIN_DIR       = ./bin/
 
 OPTIONS += $(MCU)
@@ -61,6 +62,18 @@ C_OBJECT_FILES := $(patsubst $(SRC_DIR)%.c,$(BIN_DIR)%.o,$(wildcard $(SRC_DIR)*.
 all: $(C_OBJECT_FILES) $(BIN_DIR)
 	$(C_COMPILER) $(C_FLAGS) $(SRC_DIR)$(TARGET).c -o $(BIN_DIR)$(TARGET).o
 	make $(BIN_DIR)$(TARGET).bin
+
+# generate the attack and decay lookup tables
+lut:
+	@cd utils;\
+	python3 lookup_table_gen.py
+	@cd ../;
+
+# show a plot of the attack and decay lookup tables
+plot_lut:
+	@cd utils;\
+	python3 lookup_table_gen.py -p
+	@cd ../;
 
 # compile the user provided application assembly source files
 $(BIN_DIR)%.o: $(SRC_DIR)%.s
