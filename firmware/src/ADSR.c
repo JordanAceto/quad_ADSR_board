@@ -287,14 +287,31 @@ uint32_t Current_ADSR_State_Is_Tickable(ADSR_t * p_ADSR)
 
 void Calculate_Tuning_Word_And_Increment_Accumulator(ADSR_t * p_ADSR)
 {
-    const uint32_t period_of_current_state_in_mSec = p_ADSR->input[p_ADSR->state];
+    // In DDS, the tuning word M = (2^N * f_out)/(f_c), where N is the number of
+    // bits in the accumulator, f_out is the desired output frequency, and f_c
+    // is the sample rate.
 
-    const uint32_t mSec_per_second = 1000u;
-    const uint64_t numerator = MAX_ACCUMULATOR_VALUE * mSec_per_second;
+    // Since the ADSR times are stored as periods, and measured in milliseconds,
+    // f_out = (1000)/(p_state) where p_state is the period of the current ADSR
+    // state in milliseconds.
 
-    const uint32_t tuning_word = (numerator) / (p_ADSR->sample_rate * period_of_current_state_in_mSec);
+    // Thus the final tuning word calculation is: M = (2^N * 1000)/(f_c * p_state)
 
-    p_ADSR->phase_accumulator += tuning_word;
+    // The tuning word M is calculated in stages to avoid overflowing a uint32.
+
+    // Note that the MAX_ACCUMULATOR value is actually equal to 2^N - 1, but this 
+    // off-by-one does not meaningfully impact the calculation.
+
+    const uint32_t two_to_the_N = MAX_ACCUMULATOR_VALUE;
+    const uint32_t f_c          = p_ADSR->sample_rate;
+    const uint32_t p_state      = p_ADSR->input[p_ADSR->state];
+    const uint32_t mSec_per_sec = 1000u;
+
+    uint32_t M = two_to_the_N / f_c;
+    M         *= mSec_per_sec;
+    M         /= p_state;
+
+    p_ADSR->phase_accumulator += M;
 }
 
 void Handle_State_Transitions(ADSR_t * p_ADSR)
