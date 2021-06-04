@@ -69,20 +69,6 @@
 #define ADSR_LOOK_UP_TABLE_TABLE_SIZE (1u << NUM_INDEX_BITS_IN_ACCUMULATOR)
 
 /*
---| NAME: MAX_ADSR_VALUE
---| DESCRIPTION: the maximum value of the ADSR.
---| TYPE: uint32_t
-*/
-#define MAX_ADSR_VALUE (0xFFFFFFFFu)
-
-/*
---| NAME: SUSTAIN_SCALER
---| DESCRIPTION: scaler to map sustain from [0, 1000] to [0, 2^32 - 1]
---| TYPE: uint32_t
-*/
-#define SUSTAIN_SCALER (MAX_ADSR_VALUE / ADSR_MAX_SUSTAIN_LEVEL_percent_x_10)
-
-/*
 --|----------------------------------------------------------------------------|
 --| PRIVATE HELPER FUNCTION PROTOTYPES
 --|----------------------------------------------------------------------------|
@@ -174,25 +160,20 @@ Function Name:
     Linear_Interpolation
 
 Function Description:
-    Linearly interpolate two points where y1 is the current point in the LUT, 
-    y2 is the next point in the LUT, and the fraction is composed of the lower  
-    NUM_FRACTIONAL_BITS_IN_ACCUMULATOR bits in the accumulator and represents 
-    how far you are in the x direction between y1 and y2.
+    Linearly interpolate between two points y1 and y2.
     
 Parameters:
-    y1: the current point in the LUT
-    y2: the next point in the LUT
-    fraction: the lower NUM_FRACTIONAL_BITS_IN_ACCUMULATOR bits in the 
-        accumulator. represents how far you are in the x direction between 
-        y1 and y2.
+    y1: the first point
+    y2: the second point
+    fraction: how far you are in the x direction between y1 and y2.
 
 Returns:
-    uint32_t: the linearly interpolated value between y1 and y2.
+    float: the linearly interpolated value between y1 and y2.
 
 Assumptions/Limitations:
     None.
 ------------------------------------------------------------------------------*/
-static uint32_t Linear_Interpolation(uint32_t y1, uint32_t y2, uint32_t fraction);
+static float Linear_Interpolation(float y1, float y2, float fraction);
 
 /*
 --|----------------------------------------------------------------------------|
@@ -209,13 +190,13 @@ void Initialize_ADSR(ADSR_t * p_ADSR, uint32_t sample_rate)
     p_ADSR->input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] = ADSR_DEFAULT_SUSTAIN_LEVEL_percent_x_10;
     p_ADSR->input[ADSR_INPUT_TYPE_RELEASE_TIME_mSec]          = ADSR_DEFAULT_RELEASE_TIME_mSec;
 
-    p_ADSR->current_value = 0u;
+    p_ADSR->current_value = 0.0f;
 
-    p_ADSR->phase_accumulator = 0u;
+    p_ADSR->phase_accumulator      = 0u;
     p_ADSR->last_accumulator_value = 0u;
 
-    p_ADSR->value_when_gate_on_recieved = 0;
-    p_ADSR->value_when_gate_off_recieved = 0u;
+    p_ADSR->value_when_gate_on_recieved  = 0.0f;
+    p_ADSR->value_when_gate_off_recieved = 0.0f;
 
     p_ADSR->sample_rate = sample_rate;
 }
@@ -369,7 +350,7 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
     top to sustain level at the bottom. The decay curve must be compressed to 
     fit in this reduced range. The coefficient variable helps accomplish this. 
     */
-    uint64_t coefficient;
+    float coefficient;
 
     /* 
     The value of the current sample. This will come from the attack LUT if the 
@@ -378,7 +359,7 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
     sustain. If the current state is at-rest, the value of the sample will be 
     zero.
     */
-    uint64_t sample;
+    float sample;
 
     /*
     The offset for the current sample. This is only non-zero when an attack 
@@ -387,7 +368,7 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
     ADSR curve, so that it fits between the starting value for the curve segment 
     and the target value for the curve segment.
     */
-    uint64_t offset;
+    float offset;
 
     /*
     y1 and y2 are used for linear interpolation. These are only used for the 
@@ -397,8 +378,8 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
     a point on the line between y1 and y2 that approximates the ADSR value 
     between the two points in the LUT.
     */
-    uint32_t y1;
-    uint32_t y2;
+    float y1;
+    float y2;
 
     // the current LUT index
     const uint32_t LUT_index = p_ADSR->phase_accumulator >> NUM_FRACTIONAL_BITS_IN_ACCUMULATOR;
@@ -406,8 +387,11 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
     // the next LUT index for interpolation, clamps at the max index to avoid bad behavior
     const uint32_t next_idx = (LUT_index + 1u) < ADSR_LOOK_UP_TABLE_TABLE_SIZE ? LUT_index + 1u : ADSR_LOOK_UP_TABLE_TABLE_SIZE - 1u;
 
-    // the fractional part of the phase accumulator
-    const uint32_t accumulator_fraction = p_ADSR->phase_accumulator & ACCUMULATOR_FRACTION_MASK;
+    // the fractional part of the phase accumulator, used in interpolation
+    const float accumulator_fraction = ((float)(p_ADSR->phase_accumulator & ACCUMULATOR_FRACTION_MASK)) / ACCUMULATOR_FRACTION_MASK;
+
+    // the sustain level scaled to be in the range [0.0, 1.0]
+    const float sustain_0_to_1 = ((float)p_ADSR->input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10]) / ADSR_MAX_SUSTAIN_LEVEL_percent_x_10;
 
     switch (p_ADSR->state)
     {
@@ -415,7 +399,7 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
         y1 = ADSR_ATTACK_TABLE[LUT_index];
         y2 = ADSR_ATTACK_TABLE[next_idx];
         
-        coefficient = MAX_ADSR_VALUE - p_ADSR->value_when_gate_on_recieved;
+        coefficient = 1.0f - p_ADSR->value_when_gate_on_recieved;
         sample      = Linear_Interpolation(y1, y2, accumulator_fraction);
         offset      = p_ADSR->value_when_gate_on_recieved;
         break;
@@ -424,15 +408,15 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
         y1 = ADSR_DECAY_TABLE[LUT_index];
         y2 = ADSR_DECAY_TABLE[next_idx];
 
-        coefficient = MAX_ADSR_VALUE - (p_ADSR->input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] * SUSTAIN_SCALER);
+        coefficient = 1.0f - sustain_0_to_1;
         sample      = Linear_Interpolation(y1, y2, accumulator_fraction);
-        offset      = p_ADSR->input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] * SUSTAIN_SCALER;
+        offset      = sustain_0_to_1;
         break;
 
     case ADSR_STATE_TYPE_SUSTAIN:
-        coefficient = MAX_ADSR_VALUE;
-        sample      = p_ADSR->input[ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10] * SUSTAIN_SCALER;
-        offset      = 0u;
+        coefficient = 1.0f;
+        sample      = sustain_0_to_1;
+        offset      = 0.0f;
         break;
 
     case ADSR_STATE_TYPE_RELEASE:
@@ -441,31 +425,26 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
 
         coefficient = p_ADSR->value_when_gate_off_recieved;
         sample      = Linear_Interpolation(y1, y2, accumulator_fraction);
-        offset      = 0u;
+        offset      = 0.0f;
         break;
     
     case ADSR_STATE_TYPE_AT_REST:
-        coefficient = 0u;
-        sample      = 0u;
-        offset      = 0u;
+        coefficient = 0.0f;
+        sample      = 0.0f;
+        offset      = 0.0f;
         break;
 
     default:
-        coefficient = 0u;
-        sample      = 0u;
-        offset      = 0u;
+        coefficient = 0.0f;
+        sample      = 0.0f;
+        offset      = 0.0f;
         break;
     }
 
-    const uint64_t scaled_sample = (coefficient * sample) / MAX_ADSR_VALUE;
-    p_ADSR->current_value = scaled_sample + offset;
+    p_ADSR->current_value = coefficient * sample + offset;
 }
 
-uint32_t Linear_Interpolation(uint32_t y1, uint32_t y2, uint32_t fraction)
+float Linear_Interpolation(float y1, float y2, float fraction)
 {
-    const uint32_t delta_y = y2 - y1;
-
-    const uint32_t fractional_part = (fraction * delta_y) >> NUM_FRACTIONAL_BITS_IN_ACCUMULATOR;
-
-    return y1 + fractional_part;
+    return y1 + ((y2 - y1) * fraction);
 }

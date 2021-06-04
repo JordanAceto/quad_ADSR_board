@@ -25,8 +25,10 @@
 --|          The current sample of the ADSR waveform
 --|      
 --|      This software ADSR is implemented with fixed-point 32 bit 
---|      unsigned integer types for all of the input and output
---|      parameters.
+--|      unsigned integer types for internal calculations, and floating
+--|      point types for the ADSR waveform outputs.
+--|
+--|      The ADSR waveform output is in the range [0.0, 1.0].
 --| 
 --|      A Phase-Accumulator and Look-Up-Table (LUT) approach is used.
 --|      This is known as "Direct Digital Synthesis", or DDS.
@@ -194,12 +196,12 @@ typedef struct ADSR_Type
 
     uint32_t input[NUM_ADSR_INPUT_TYPES];
 
-    uint32_t current_value;
+    float current_value;
 
     uint32_t phase_accumulator;
     uint32_t last_accumulator_value;
-    uint32_t value_when_gate_on_recieved;
-    uint32_t value_when_gate_off_recieved;
+    float value_when_gate_on_recieved;
+    float value_when_gate_off_recieved;
 
     uint32_t sample_rate;
 
