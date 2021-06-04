@@ -21,6 +21,7 @@
 
 #include "ADSR.h"
 #include "encoders.h"
+#include "FPU.h"
 #include "global_data.h"
 #include "GPIO.h"
 #include "input_processing.h"
@@ -75,6 +76,7 @@ void SystemInit(void)
 {
     __disable_irq();
 
+    FPU_Init();
     RCC_Init();
     SysTick_Init();
     GPIO_Init();
