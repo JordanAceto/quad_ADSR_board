@@ -54,7 +54,7 @@ OBJ_COPY_FLAGS += -S
 OBJ_COPY_FLAGS += -O 
 OBJ_COPY_FLAGS += binary
 
-ASM_OBJECT_FILES := $(patsubst $(SRC_DIR)%.s,$(BIN_DIR)%.o,$(wildcard $(SRC_DIR)*.s))
+ASM_OBJECT_FILES := $(patsubst $(THIRD_PARTY)%.s,$(BIN_DIR)%.o,$(wildcard $(THIRD_PARTY)*.s))
 
 C_OBJECT_FILES := $(patsubst $(SRC_DIR)%.c,$(BIN_DIR)%.o,$(wildcard $(SRC_DIR)*.c))
 
@@ -75,8 +75,8 @@ plot_lut:
 	python3 lookup_table_gen.py -p
 	@cd ../;
 
-# compile the user provided application assembly source files
-$(BIN_DIR)%.o: $(SRC_DIR)%.s
+# compile the third party assembly startup source files
+$(BIN_DIR)%.o: $(THIRD_PARTY)%.s
 	$(C_COMPILER) $(ASM_FLAGS) $< -o $@
 
 # compile the user provided application c source files
