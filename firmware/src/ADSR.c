@@ -342,8 +342,8 @@ void Calculate_Current_ADSR_Value(ADSR_t * p_ADSR)
     /*
     The coefficient for the sample is between 0 and full scale. This is used to
     accomplish a multiplication of the ADSR value by a coefficient between 0.0 
-    and 1.0, using only integer multiplication. This is used to "squish" the 
-    attack, decay, and release curves as needed. 
+    and 1.0. This is used to "squish" the attack, decay, and release curves as 
+    needed. 
     
     Example: the decay curve starts at full scale, and ramps down to the sustain 
     level. The range of the decay curve from top to bottom is full-scale at the 
