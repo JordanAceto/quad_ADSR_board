@@ -7,12 +7,21 @@
 #   The attack LUT is a truncated rising rc curve and the decay LUT is a decaying
 #   rc curve. The decay LUT is used for both the decay and release phases.
 #
-#   Pass the optional command line flag -p to show a plot of the attack and 
-#   decay curves.
+#   This script is invoked from the Makefile by:
+#       $ make write_lut ATTACK_TARGET=xxx NUM_TIME_CONSTANTS=xxx
+#   or
+#       $ make plot_lut ATTACK_TARGET=xxx NUM_TIME_CONSTANTS=xxx
+#
+#   Default values are provided for the attack target and number of time constants,
+#   so these are not mandatory to enter. However, if the user wants to experiment
+#   with different curve shapes, a quick way to do it is to experimentally plot
+#   some different shapes, and then when you have shapes that seem interesting
+#   write the LUTs with the same values.
 #
 ################################################################################
 
 import sys
+import argparse
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -20,33 +29,58 @@ from matplotlib import pyplot as plt
 HEADER_OUTPUT_FILE_PATH = "../inc/lookup_tables.h"
 SOURCE_OUTPUT_FILE_PATH = "../src/lookup_tables.c"
 
-# pass argv -p to show a plot of the attack and decay curves, useful while tweaking 
-# the curves and debugging
-PLOT_CURVES = True if ('-p' in sys.argv) else False
+# the lookup table size, must match the ADSR_LOOK_UP_TABLE_TABLE_SIZE and 
+# NUM_INDEX_BITS_IN_ACCUMULATOR definitions in adsr.c, where ADSR_LOOK_UP_TABLE_TABLE_SIZE
+# is 2^NUM_INDEX_BITS_IN_ACCUMULATOR
+LUT_SIZE = 2**10
+
+# arguments decide whether to plot the curves or write the c files, and allow the
+# user to modify the shape of the curves
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+    'action',
+    help='the action to do, either graphically plot the LUT, or generate and write the c files',
+    choices=['plot', 'write']
+)
+
+parser.add_argument(
+    'attack_target', 
+    help='the target value for the attack curve, useful range: [1..5]',
+    nargs='?',
+    default=3.0,
+    type=float
+)
+
+parser.add_argument(
+    'num_time_constants', 
+    help='the number of time constants to extend the attack and decay curves, useful range: [3..10]',
+    nargs='?',
+    default=4.0,
+    type=float
+)
+
+args = parser.parse_args()
 
 # the size of the optional plotted figure
 plt.rcParams['figure.figsize'] = (8.0, 6.0)
-
-# the lookup table size, must match the ADSR_LOOK_UP_TABLE_TABLE_SIZE definition in adsr.c
-LUT_SIZE = 2**10
 
 # the target for the attack curve, flattens out the attack curve like an analog ADSR
 # which sets a target for the attack curve higher than the trip point
 # Example: the attack target is often 15 volts, but the comparator trips at 10 volts
 # bigger number means flatter attack curve, adjust to taste
-ATTACK_TARGET = 3
+ATTACK_TARGET = args.attack_target
 
 # how far out to take the curves in the LUT, too short and the curves will not
 # have time to decay gracefully, too long and all the action will be bunched up
 # in the front of the LUT
-END = 4
+NUM_TIME_CONSTANTS = args.num_time_constants
 
 # the linear input to transform into the attack and decay curves
-X = np.linspace(0, END, LUT_SIZE)
+X = np.linspace(0, NUM_TIME_CONSTANTS, LUT_SIZE)
 
 # generate the attack curve, range [0, 1], increasing truncated rc curve
 y_a = 1 - np.exp(-X / ATTACK_TARGET)
-y_a = y_a - y_a.min() # start at zero
 y_a = y_a / y_a.max() # range [0, 1]
 
 # generate the decay/release curve, range [0, 1], decreasing rc curve
@@ -54,22 +88,21 @@ y_d = np.exp(-X)
 y_d = y_d - y_d.min() # end at zero
 y_d = y_d / y_d.max() # range [0, 1]
 
-# optionally plot the curves
-if (PLOT_CURVES):
+if (args.action == 'plot'): # graphically plot the curves
     fig = plt.figure()
     ax = fig.add_subplot()
 
     ax.plot(np.linspace(0, LUT_SIZE-1, LUT_SIZE), y_a, label="attack")
     ax.plot(np.linspace(0, LUT_SIZE-1, LUT_SIZE), y_d, label="decay")
 
-    plt.title(f"Attack and decay lookup tables with {LUT_SIZE} points")
+    plt.suptitle(f"Attack and decay lookup tables with {LUT_SIZE} points")
+    plt.title(f'attack target: {ATTACK_TARGET}\nnum time constants: {NUM_TIME_CONSTANTS}')
     plt.xlabel("LUT index")
     plt.ylabel("value")
     plt.legend()
 
     plt.show()
-else:
-    # write the c-header file
+elif (args.action == 'write'): # write the c-header file
     print(f"generating {HEADER_OUTPUT_FILE_PATH} file...")
 
     ATTACK_TABLE_TYPE = f'const float ADSR_ATTACK_TABLE[{LUT_SIZE}]'

@@ -54,26 +54,20 @@ OBJ_COPY_FLAGS += -S
 OBJ_COPY_FLAGS += -O 
 OBJ_COPY_FLAGS += binary
 
-ASM_OBJECT_FILES := $(patsubst $(THIRD_PARTY)%.s,$(BIN_DIR)%.o,$(wildcard $(THIRD_PARTY)*.s))
+ASM_STARTUP_FILE := $(patsubst $(THIRD_PARTY)%.s,$(BIN_DIR)%.o,$(wildcard $(THIRD_PARTY)*.s))
 
 C_OBJECT_FILES := $(patsubst $(SRC_DIR)%.c,$(BIN_DIR)%.o,$(wildcard $(SRC_DIR)*.c))
 
 .PHONY: all
-all: $(C_OBJECT_FILES) $(BIN_DIR)
+all: $(C_OBJECT_FILES)
 	$(C_COMPILER) $(C_FLAGS) $(SRC_DIR)$(TARGET).c -o $(BIN_DIR)$(TARGET).o
 	make $(BIN_DIR)$(TARGET).bin
 
-# generate the attack and decay lookup tables
-lut:
-	@cd utils;\
-	python3 lookup_table_gen.py
-	@cd ../;
+$(C_OBJECT_FILES): | $(BIN_DIR)
 
-# show a plot of the attack and decay lookup tables
-plot_lut:
-	@cd utils;\
-	python3 lookup_table_gen.py -p
-	@cd ../;
+# if ./bin/ does not exist, create the directory
+$(BIN_DIR):
+	mkdir $@
 
 # compile the third party assembly startup source files
 $(BIN_DIR)%.o: $(THIRD_PARTY)%.s
@@ -83,8 +77,8 @@ $(BIN_DIR)%.o: $(THIRD_PARTY)%.s
 $(BIN_DIR)%.o: $(SRC_DIR)%.c
 	$(C_COMPILER) $(C_FLAGS) $< -o $@
 
-$(BIN_DIR)$(TARGET).elf: $(C_OBJECT_FILES) $(ASM_OBJECT_FILES) $(BIN_DIR)$(TARGET).o
-	$(C_COMPILER) $(L_FLAGS) -o $(BIN_DIR)$(TARGET).elf $(ASM_OBJECT_FILES) $(C_OBJECT_FILES) $(CPP_OBJECT_FILES)
+$(BIN_DIR)$(TARGET).elf: $(C_OBJECT_FILES) $(ASM_STARTUP_FILE) $(BIN_DIR)$(TARGET).o
+	$(C_COMPILER) $(L_FLAGS) -o $(BIN_DIR)$(TARGET).elf $(ASM_STARTUP_FILE) $(C_OBJECT_FILES) $(CPP_OBJECT_FILES)
 
 $(BIN_DIR)$(TARGET).bin: $(BIN_DIR)$(TARGET).elf
 	$(OBJECT_COPY) $(OBJ_COPY_FLAGS) $< $@
@@ -95,9 +89,17 @@ $(BIN_DIR)$(TARGET).bin: $(BIN_DIR)$(TARGET).elf
 write: $(BIN_DIR)$(TARGET).bin
 	st-flash --reset write $(BIN_DIR)$(TARGET).bin 0x08000000
 
-# if ./bin/ does not exist, create the directory
-$(BIN_DIR):
-	mkdir $@
+# a python script handles lookup table generation
+# ATTACK_TARGET is used to truncated the attack rc curve, useful range [1..5]
+# NUM_TIME_CONSTANTS sets the number of time constants that the LUT contains, useful range [3..10]
+
+# generate the attack and decay lookup tables as c files
+write_lut:
+	@cd utils; python3 lookup_table_gen.py write $(ATTACK_TARGET) $(NUM_TIME_CONSTANTS);
+
+# show a plot of the attack and decay lookup tables
+plot_lut:
+	@cd utils; python3 lookup_table_gen.py plot $(ATTACK_TARGET) $(NUM_TIME_CONSTANTS);
 
 clean:
 	rm -f $(BIN_DIR)*.o
