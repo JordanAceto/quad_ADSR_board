@@ -24,6 +24,7 @@
 #include "FPU.h"
 #include "global_data.h"
 #include "GPIO.h"
+#include "I2C2.h"
 #include "input_processing.h"
 #include "interrupts.h"
 #include "RCC.h"
@@ -79,6 +80,7 @@ void SystemInit(void)
     FPU_Init();
     RCC_Init();
     SysTick_Init();
+    I2C2_Init();
     GPIO_Init();
     SPI3_Init();
     TIM6_Init();
