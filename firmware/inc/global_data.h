@@ -50,6 +50,27 @@ typedef enum ADSR_Mode_Type
 */
 
 /*
+--| NAME: SYSTEM_CLOCK_SPEED
+--| DESCRIPTION: System Core Clock frequency in Hz
+--| TYPE: uint32_t
+*/
+#define SYSTEM_CLOCK_SPEED ((uint32_t)50E6)
+
+/*
+--| NAME: APB1_TIMER_CLOCK
+--| DESCRIPTION: APB1 timer Clock frequency in Hz
+--| TYPE: uint32_t
+*/
+#define APB1_TIMER_CLOCK (SYSTEM_CLOCK_SPEED)
+
+/*
+--| NAME: APB1_PERIPHERAL_CLOCK
+--| DESCRIPTION: APB1 peripheral Clock frequency in Hz
+--| TYPE: uint32_t
+*/
+#define APB1_PERIPHERAL_CLOCK (SYSTEM_CLOCK_SPEED/2u)
+
+/*
 --| NAME: NUM_ADSRs
 --| DESCRIPTION: the number of ADSR generators in the system
 --| TYPE: uint
