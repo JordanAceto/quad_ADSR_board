@@ -255,6 +255,6 @@ ADSR_input_t active_encoder = ADSR_INPUT_TYPE_ATTACK_TIME_mSec;
 */
 SysTick_Timeout_Timer_t EEPROM_periodic_timer =
 {
-    10000,//EEPROM_WAIT_TIME_mSec,
+    EEPROM_WAIT_TIME_mSec,
     0u
 };
