@@ -19,6 +19,7 @@
 
 #include "encoders.h"
 #include "global_data.h"
+#include "EEPROM_24LC32.h"
 #include "input_processing.h"
 
 /*
@@ -47,9 +48,61 @@ static void restore_cached_ADSR_settings(void);
 
 /*
 --|----------------------------------------------------------------------------|
+--| PRIVATE VARIABLES
+--|----------------------------------------------------------------------------|
+*/
+
+/*
+--| NAME: eeprom_save_pending 
+--| DESCRIPTION: true if there is new data to be written to the EEPROM, else false
+--| TYPE: bool
+*/
+static bool eeprom_save_pending = false;
+
+/*
+--|----------------------------------------------------------------------------|
 --| PUBLIC FUNCTION DEFINITIONS
 --|----------------------------------------------------------------------------|
 */
+
+void get_and_cache_adsr_settings_from_EEPROM(void)
+{
+    const uint16_t SINGLE_ADSR_STORAGE_SIZE_IN_BYTES = ADSR_EEPROM_MEM_SIZE_IN_BYTES / NUM_ADSRs;
+
+    // read the ADSR settings from the EEPROM one ADSR at a time
+    for (int i = 0; i < NUM_ADSRs; i++)
+    {
+        EEPROM_24LC32_read(
+            EEPROM_MEMORY_ADDRESS + (SINGLE_ADSR_STORAGE_SIZE_IN_BYTES*i), 
+            (uint8_t *)cached_ADSR_setting[i], 
+            SINGLE_ADSR_STORAGE_SIZE_IN_BYTES
+        );
+    }
+
+    restore_cached_ADSR_settings();
+}
+
+void store_cached_adsr_settings_in_EEPROM(void)
+{
+    const uint16_t SINGLE_ADSR_STORAGE_SIZE_IN_BYTES = ADSR_EEPROM_MEM_SIZE_IN_BYTES / NUM_ADSRs;
+
+    // write the ADSR settings to the EEPROM one ADSR at a time
+    for (int i = 0; i < NUM_ADSRs; i++)
+    {
+        EEPROM_24LC32_write(
+            EEPROM_MEMORY_ADDRESS + (SINGLE_ADSR_STORAGE_SIZE_IN_BYTES*i), 
+            (uint8_t *)cached_ADSR_setting[i], 
+            SINGLE_ADSR_STORAGE_SIZE_IN_BYTES
+        );
+    }
+
+    eeprom_save_pending = false;
+}
+
+bool eeprom_save_is_pending(void)
+{
+    return eeprom_save_pending;
+}
 
 void poll_encoders(void)
 {
@@ -60,6 +113,7 @@ void poll_encoders(void)
         {
             active_encoder = i;
             cached_encoder_reading[i] = p_encoder[i]->CNT;
+            eeprom_save_pending = true;
 
             if (i == ADSR_INPUT_TYPE_SUSTAIN_LEVEL_percent_x_10)
             {
@@ -69,8 +123,6 @@ void poll_encoders(void)
             {
                 cached_ADSR_setting[active_adsr][i] = encoder_count_to_ADR_param(p_encoder[i]);
             }
-
-            return;
         }
     }
 }

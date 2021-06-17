@@ -22,6 +22,61 @@
 
 /*------------------------------------------------------------------------------
 Function Name:
+    get_and_cache_adsr_settings_from_EEPROM
+
+Function Description:
+    Read the ADSR settings stored in the EEPROM and update the values of
+    the ADSRs with those settings.
+
+Parameters:
+    None
+
+Returns:
+    None.
+
+Assumptions/Limitations:
+    Assumes that all initialization is complete.
+------------------------------------------------------------------------------*/
+void get_and_cache_adsr_settings_from_EEPROM(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
+    store_cached_adsr_settings_in_EEPROM
+
+Function Description:
+    Store the cached ADSR settings in the EEPROM.
+
+Parameters:
+    None
+
+Returns:
+    None.
+
+Assumptions/Limitations:
+    Assumes that all initialization is complete.
+------------------------------------------------------------------------------*/
+void store_cached_adsr_settings_in_EEPROM(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
+    eeprom_save_is_pending
+
+Function Description:
+    Return true if there is new data to be written to the EEPROM, else false.
+
+Parameters:
+    None
+
+Returns:
+    None.
+
+Assumptions/Limitations:
+    None
+------------------------------------------------------------------------------*/
+bool eeprom_save_is_pending(void);
+
+/*------------------------------------------------------------------------------
+Function Name:
     poll_encoders
 
 Function Description:
