@@ -68,7 +68,7 @@ Parameters:
     None
 
 Returns:
-    None.
+    Boolean, true if an EEPROM write is pending, else false.
 
 Assumptions/Limitations:
     None
