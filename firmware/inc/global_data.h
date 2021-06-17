@@ -23,6 +23,7 @@
 #include "ADSR.h"
 #include "Discrete_Input.h"
 #include <stdbool.h>
+#include "SysTick.h"
 
 /*
 --|----------------------------------------------------------------------------|
@@ -128,6 +129,36 @@ typedef enum ADSR_Mode_Type
 #define EEPROM_DEVICE_ADDRESS (0xA0u)
 
 /*
+--| NAME: EEPROM_MEMORY_ADDRESS
+--| DESCRIPTION: the start of the memory region used by the EEPROM
+--| TYPE: uint
+*/
+#define EEPROM_MEMORY_ADDRESS (0x0u)
+
+/*
+--| NAME: ADSR_EEPROM_MEM_SIZE_IN_BYTES
+--| DESCRIPTION: the number of bytes that the ADSR settings consume in the EEPROM
+--|              4 ADSRs with 4 inputs each, each 32 bit input takes up 4 bytes
+--| TYPE: uint
+*/
+#define ADSR_EEPROM_MEM_SIZE_IN_BYTES (NUM_ADSRs * NUM_ADSR_INPUT_TYPES * 4u)
+
+/*
+--| NAME: EEPROM_WAIT_TIME_MINUTES
+--| DESCRIPTION: the time period to wait between EEPROM writes in minutes
+--| TYPE: uint
+*/
+#define EEPROM_WAIT_TIME_MINUTES (10u)
+
+/*
+--| NAME: EEPROM_WAIT_TIME_mSec
+--| DESCRIPTION: the time period to wait between EEPROM writes in milliseconds
+--|              (1000 mSec/sec) * (60 sec/min) * (desired num minutes)
+--| TYPE: uint
+*/
+#define EEPROM_WAIT_TIME_mSec (1000u * 60u * EEPROM_WAIT_TIME_MINUTES)
+
+/*
 --|----------------------------------------------------------------------------|
 --| PUBLIC VARIABLES
 --|----------------------------------------------------------------------------|
@@ -204,10 +235,10 @@ uint32_t cached_ADSR_setting[NUM_ADSRs][NUM_ADSR_INPUT_TYPES];
 ADSR_input_t active_encoder;
 
 /*
---| NAME: eeprom_save_allowed
---| DESCRIPTION: boolean guard, allows or forbids writing to the EEPROM
---| TYPE: bool
+--| NAME: EEPROM_periodic_timer
+--| DESCRIPTION: Periodic timer object for scheduling EEPROM writes
+--| TYPE: SysTick_Timeout_Timer_t
 */
-bool eeprom_save_allowed;
+SysTick_Timeout_Timer_t EEPROM_periodic_timer;
 
 #endif

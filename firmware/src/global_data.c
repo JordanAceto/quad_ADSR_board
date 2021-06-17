@@ -251,6 +251,10 @@ uint32_t cached_ADSR_setting[NUM_ADSRs][NUM_ADSR_INPUT_TYPES] =
 ADSR_input_t active_encoder = ADSR_INPUT_TYPE_ATTACK_TIME_mSec;
 
 /*
---| NAME: eeprom_save_allowed
+--| NAME: EEPROM_periodic_timer
 */
-bool eeprom_save_allowed = false;
+SysTick_Timeout_Timer_t EEPROM_periodic_timer =
+{
+    10000,//EEPROM_WAIT_TIME_mSec,
+    0u
+};
