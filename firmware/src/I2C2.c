@@ -116,8 +116,12 @@ static void initiate_I2C2_mem_transfer(uint16_t device_addr, uint16_t mem_addr)
     }
 
     // clear the address flag by reading SR1 and SR2
-    volatile uint32_t dummy = I2C2->SR1;
-    dummy = I2C2->SR2;
+    volatile uint32_t dummy = I2C2->SR1 | I2C2->SR2;
+
+    while (!(I2C2->SR1 & I2C_SR1_TXE))
+    {
+        // wait for the data register to be empty
+    }
 
     // send the memory address high byte
     I2C2->DR = mem_addr >> 8u;
@@ -143,16 +147,17 @@ void I2C2_memory_write(uint16_t device_addr, uint16_t mem_addr, uint8_t* in_buff
     // enable acknowledge
     I2C2->CR1 |= I2C_CR1_ACK;
 
-    while (num_bytes > 0)
+    for (int i = 0; i < num_bytes; i++)
     {
-        if (I2C2->SR1 & I2C_SR1_TXE)
+        while (!(I2C2->SR1 & I2C_SR1_TXE))
         {
-            // read the data register
-            I2C2->DR = *in_buff;
-            in_buff++;
-
-            num_bytes--;
+            // wait for the tx buffer to be empty
         }
+
+        // write the next byte
+        I2C2->DR = *in_buff;
+
+        in_buff++;
     }
 
     while (!(I2C2->SR1 & I2C_SR1_BTF))
@@ -162,13 +167,17 @@ void I2C2_memory_write(uint16_t device_addr, uint16_t mem_addr, uint8_t* in_buff
 
     // initiate a stop condition
     I2C2->CR1 |= I2C_CR1_STOP;
+
+    // hack to get around infinite hang when reading directly after writing
+    // the system goes into an infinite loop without this delay if an EEPROM 
+    // operation happens right after a call to this function.
+    // TODO: investigate and fix the problem, this delay is not ideal because if
+    // it happens while someone is playing there may be an annoying discontinuity.
+    SysTick_Delay_mSec(5);
 }
 
 void I2C2_memory_read(uint16_t device_addr, uint16_t mem_addr, uint8_t* out_buff, uint16_t num_bytes)
 {
-    // hack to get around infinite hang when reading directly after writing
-    SysTick_Delay_mSec(10);
-
     initiate_I2C2_mem_transfer(device_addr, mem_addr);
 
     // initiate a restart condition
@@ -205,13 +214,15 @@ void I2C2_memory_read(uint16_t device_addr, uint16_t mem_addr, uint8_t* out_buff
             I2C2->CR1 |= I2C_CR1_STOP;
         }
 
-        if (I2C2->SR1 & I2C_SR1_BTF)
+        while (!(I2C2->SR1 & I2C_SR1_RXNE))
         {
-            // read the data register
-            *out_buff = I2C2->DR;
-            out_buff++;
-
-            num_bytes--;
+            // wait for the data to be ready
         }
+
+        // read the data register
+        *out_buff = I2C2->DR;
+        out_buff++;
+
+        num_bytes--;
     }
 }
