@@ -69,4 +69,27 @@ Assumptions/Limitations:
 ------------------------------------------------------------------------------*/
 void EEPROM_24LC32_read(uint16_t mem_addr, uint8_t* out_buff, uint16_t num_bytes);
 
+/*------------------------------------------------------------------------------
+Function Name:
+    test_EEPROM
+
+Function Description:
+    Perform a test of the EEPROM by writing some data, then reading the same 
+    data back and checking to see if they match.
+
+    If the data does match, blink the onboard LED rapidly for a few seconds.
+
+    If the data does not match, blink the onboard LED slowly for a few seconds.
+
+Parameters:
+    None
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    Assumed that I2C2 has been initialized.
+------------------------------------------------------------------------------*/
+void test_EEPROM(void);
+
 #endif
