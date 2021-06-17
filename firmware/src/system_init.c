@@ -88,12 +88,15 @@ void SystemInit(void)
     encoders_Init();
     interrupts_Init();
 
+    __enable_irq();
+
     for (int i = 0; i < NUM_ADSRs; ++i)
     {
         Initialize_ADSR(&adsr[i], ADSR_SAMPLE_RATE_Hz);
     }
 
+    get_and_cache_adsr_settings_from_EEPROM();
     set_encoders_to_active_adsr_values();
 
-    __enable_irq();
+    SysTick_Start_Timeout_Timer(&EEPROM_periodic_timer);
 }
