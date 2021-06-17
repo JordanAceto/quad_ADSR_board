@@ -53,13 +53,49 @@
 --| DESCRIPTION: the interrupt flags used by the system
 --| TYPE: bool
 */
-static bool flags[NUM_INTERRUPT_FLAG_TYPES];
+static volatile bool flags[NUM_INTERRUPT_FLAG_TYPES];
 
 /*
 --|----------------------------------------------------------------------------|
 --| PRIVATE HELPER FUNCTION PROTOTYPES
 --|----------------------------------------------------------------------------|
 */
+
+/*------------------------------------------------------------------------------
+Function Name:
+    interrupt_set_flag
+
+Function Description:
+    Set the specified interrupt flag.
+
+Parameters:
+    flag: the flag to set
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    Assumed that the flag is a member of the Interrupt_Flag_t enumeration.
+------------------------------------------------------------------------------*/
+void interrupt_set_flag(Interrupt_Flag_t flag);
+
+/*------------------------------------------------------------------------------
+Function Name:
+    interrupt_clear_flag
+
+Function Description:
+    Clear the specified interrupt flag.
+
+Parameters:
+    flag: the flag to clear
+
+Returns:
+    None
+
+Assumptions/Limitations:
+    Assumed that the flag is a member of the Interrupt_Flag_t enumeration.
+------------------------------------------------------------------------------*/
+void interrupt_clear_flag(Interrupt_Flag_t flag);
 
 /*------------------------------------------------------------------------------
 Function Name:
@@ -116,8 +152,16 @@ void interrupts_Init(void)
 
 bool interrupt_get_flag(Interrupt_Flag_t flag)
 {
-    return flags[flag];
+    const bool retval = flags[flag];
+    interrupt_clear_flag(flag);
+    return retval;
 }
+
+/*
+--|----------------------------------------------------------------------------|
+--| PRIVATE HELPER FUNCTION DEFINITIONS
+--|----------------------------------------------------------------------------|
+*/
 
 void interrupt_set_flag(Interrupt_Flag_t flag)
 {
@@ -129,17 +173,11 @@ void interrupt_clear_flag(Interrupt_Flag_t flag)
     flags[flag] = false;
 }
 
-/*
---|----------------------------------------------------------------------------|
---| PRIVATE HELPER FUNCTION DEFINITIONS
---|----------------------------------------------------------------------------|
-*/
-
 void TIM6_DAC_IRQHandler(void)
 {
     interrupt_set_flag(INTERRUPT_FLAG_TIM6);
 
-    // clear the Update Interrupt flag
+    // clear the Update Interrupt flag in the status register
     TIM6->SR &= ~TIM_SR_UIF;
 }
 
@@ -147,6 +185,6 @@ void TIM7_IRQHandler(void)
 {
     interrupt_set_flag(INTERRUPT_FLAG_TIM7);
     
-    // clear the Update Interrupt flag
+    // clear the Update Interrupt flag in the status register
     TIM7->SR &= ~TIM_SR_UIF;
 }

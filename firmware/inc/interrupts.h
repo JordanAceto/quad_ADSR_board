@@ -68,53 +68,18 @@ Function Name:
     interrupt_get_flag
 
 Function Description:
-    Get the status of the specified interrupt flag.
+    Get the status of the specified interrupt flag and clear the flag if it 
+    was set.
 
 Parameters:
     flag: the flag to check
 
 Returns:
-    None
+    True if the given interrupt flag is set, else false.
 
 Assumptions/Limitations:
     Assumed that the flag is a member of the Interrupt_Flag_t enumeration.
 ------------------------------------------------------------------------------*/
 bool interrupt_get_flag(Interrupt_Flag_t flag);
-
-/*------------------------------------------------------------------------------
-Function Name:
-    interrupt_set_flag
-
-Function Description:
-    Set the specified interrupt flag.
-
-Parameters:
-    flag: the flag to set
-
-Returns:
-    None
-
-Assumptions/Limitations:
-    Assumed that the flag is a member of the Interrupt_Flag_t enumeration.
-------------------------------------------------------------------------------*/
-void interrupt_set_flag(Interrupt_Flag_t flag);
-
-/*------------------------------------------------------------------------------
-Function Name:
-    interrupt_clear_flag
-
-Function Description:
-    Clear the specified interrupt flag.
-
-Parameters:
-    flag: the flag to clear
-
-Returns:
-    None
-
-Assumptions/Limitations:
-    Assumed that the flag is a member of the Interrupt_Flag_t enumeration.
-------------------------------------------------------------------------------*/
-void interrupt_clear_flag(Interrupt_Flag_t flag);
 
 #endif
