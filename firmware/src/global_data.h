@@ -2,8 +2,8 @@
 --|----------------------------------------------------------------------------|
 --| FILE DESCRIPTION:
 --|   global_data.h provides access to the global data used by the system.
---|   
---|  
+--|
+--|
 --|----------------------------------------------------------------------------|
 --| REFERENCES:
 --|   None
@@ -24,6 +24,8 @@
 #include "Discrete_Input.h"
 #include <stdbool.h>
 #include "SysTick.h"
+#include "TIM6.h"
+#include "TIM7.h"
 
 /*
 --|----------------------------------------------------------------------------|
@@ -83,14 +85,14 @@ typedef enum ADSR_Mode_Type
 --| DESCRIPTION: the sample rate for the ADSRs, in Hertz
 --| TYPE: uint
 */
-#define ADSR_SAMPLE_RATE_Hz (5E3)
+#define ADSR_SAMPLE_RATE_Hz (TIM6_FREQUENCY_Hz)
 
 /*
 --| NAME: CONTROL_SAMPLE_RATE_Hz
 --| DESCRIPTION: the sample rate for the control signals, in Hertz
 --| TYPE: uint
 */
-#define CONTROL_SAMPLE_RATE_Hz (1E3)
+#define CONTROL_SAMPLE_RATE_Hz (TIM7_FREQUENCY_Hz)
 
 /*
 --| NAME: GATE_AND_TRIGGER_DEBOUNCE_COUNT

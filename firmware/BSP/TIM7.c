@@ -1,9 +1,10 @@
 /*
 --|----------------------------------------------------------------------------|
 --| FILE DESCRIPTION:
---|   TIM6.h provides the implementation for initializing TIM6.
---|   
---|   TIM6 sets the sample time for ...
+--|   TIM7.h provides the implementation for initializing TIM7.
+--|
+--|   TIM7 is configured as a periodic timer that sets the sample time for the
+--|   low priority and relatively slow tasks like updating the UI.
 --|
 --|----------------------------------------------------------------------------|
 --| REFERENCES:
@@ -19,7 +20,9 @@
 --|----------------------------------------------------------------------------|
 */
 
+#include "RCC.h"
 #include "stm32f4xx.h"
+#include "TIM7.h"
 
 /*
 --|----------------------------------------------------------------------------|
@@ -27,18 +30,18 @@
 --|----------------------------------------------------------------------------|
 */
 
-void TIM6_Init(void)
+void TIM7_Init(void)
 {
-    // enable clock control for timer 6
-    RCC->APB1ENR |= RCC_APB1ENR_TIM6EN;
+    // enable clock control for timer 7
+    RCC->APB1ENR |= RCC_APB1ENR_TIM7EN;
 
-    // set the period for the TIM6 interrupt = 5kHz
-    TIM6->PSC = 999u;
-    TIM6->ARR = 9u;
+    // set the frequency to the desired value
+    TIM7->PSC = 100u - 1u;
+    TIM7->ARR = ((SYSTEM_CORE_CLOCK / 100u) / TIM7_FREQUENCY_Hz)  - 1u;
 
     // enable update interrupts
-    TIM6->DIER |= TIM_DIER_UIE;
+    TIM7->DIER |= TIM_DIER_UIE;
 
     // enable the timer
-    TIM6->CR1 |= TIM_CR1_CEN;
+    TIM7->CR1 |= TIM_CR1_CEN;
 }

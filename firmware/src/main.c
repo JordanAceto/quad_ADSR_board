@@ -9,7 +9,7 @@
 
 int main(void)
 {
-    test_EEPROM();
+    // test_EEPROM();
 
     while (1)
     {

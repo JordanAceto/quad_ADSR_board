@@ -2,8 +2,9 @@
 --|----------------------------------------------------------------------------|
 --| FILE DESCRIPTION:
 --|   TIM7.h provides the interface for initializing TIM6.
---|   
---|   TIM7 sets the sample time for ...
+--|
+--|   TIM7 is configured as a periodic timer that sets the sample time for the
+--|   low priority and relatively slow tasks like updating the UI.
 --|
 --|----------------------------------------------------------------------------|
 --| REFERENCES:
@@ -14,6 +15,19 @@
 
 #ifndef TIM7_H_INCLUDED
 #define TIM7_H_INCLUDED
+
+/*
+--|----------------------------------------------------------------------------|
+--| PUBLIC DEFINES
+--|----------------------------------------------------------------------------|
+*/
+
+/*
+--| NAME: TIM6_FREQUENCY_Hz
+--| DESCRIPTION: the frequency of timer 6, in Hertz
+--| TYPE: uint
+*/
+#define TIM7_FREQUENCY_Hz (500u)
 
 /*
 --|----------------------------------------------------------------------------|
